@@ -120,7 +120,7 @@ server <- function(input, output, session) {
   # Should probably move that but it's convenient while editing.
   output$rainCloudAbout <- renderUI ({
     HTML("<h2>Raincloud Plots</h2>
-<p>The idea behind Raincloud plots was introduced by <a href='https://micahallen.org/2018/03/15/introducing-raincloud-plots/'>Micah Allen on his blog</a>. My coworkers and me found it really interesting to display their data but did not have any R experience, so I made this app to help introduce ggplot to them.</p>
+<p>The idea behind Raincloud plots was introduced by <a href='https://micahallen.org/2018/03/15/introducing-raincloud-plots/'>Micah Allen on his blog</a>. My coworkers and I found it really interesting to display our data but they did not have any R experience, so I made this shiny app to provide a smooth transition to R and ggplot.</p>
 <p>Please cite the preprint (<a href='https://peerj.com/preprints/27137v1/'>here</a>) if you use it in any kind of publication.</p>
 <small>The source code for this shiny app can be found in <a href='https://github.com/gabrifc/raincloud-shiny'>Github</a></small>
 ")
