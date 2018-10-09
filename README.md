@@ -1,6 +1,6 @@
 # Raincloud-shiny
 
-This is a shiny app for creating and customizing raincloud plots.
+This is a shiny app for creating and customizing raincloud plots. A demo is hosted [here](https://gabrifc.shinyapps.io/raincloudplots/).
 
 ![Raincloud plots shiny app](https://raw.githubusercontent.com/gabrifc/raincloud-shiny/master/rainCloudPlots.PNG)
 
