@@ -8,4 +8,5 @@ The idea behind Raincloud plots was introduced by [Micah Allen on his blog](http
 
 ## Citing RainCloudPlots
 Please refer to the [original RainCloudPlots source](https://github.com/RainCloudPlots/RainCloudPlots#citing-raincloudplots) for citations and licenses.
+
 TL;DR: Until the final manuscript is published, cite the original preprint ([here](https://peerj.com/preprints/27137v1/)).
