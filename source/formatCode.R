@@ -1,3 +1,5 @@
+library("gsubfn")
+
 formatCode <- function(input, code) {
   # print(summaryPrint)
   

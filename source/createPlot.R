@@ -1,3 +1,16 @@
+library("ggplot2")
+library("cowplot")
+## Save the ggplot calls for easier recovering on format
+library("ggghost")
+## Statistics
+library("ggpubr")
+## Beeswarm dots
+library("ggbeeswarm")
+## Already loaded from ui.R
+## Colour themes
+# library("ggsci")
+# library("RColorBrewer")
+## The half violin geom
 source(file = "source/halfViolinPlots.R")
 
 createPlot <- function(input, plotData) {

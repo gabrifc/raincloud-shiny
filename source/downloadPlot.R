@@ -9,7 +9,7 @@ downloadPlot <- function(input, output, session, plot,
       ggsave(file,
              ## the ggghost has to be printed to be a plot, otherwise cannot be 
              ## saved as it is not a ggplot object for ggsave.
-             plot = print(plot),
+             plot = plot,
              device = fileType,
              width = width,
              height = height,

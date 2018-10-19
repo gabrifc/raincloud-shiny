@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
-source("source/libraries.R", local = TRUE)
+#source("source/libraries.R", local = TRUE)
 source("source/createPlot.R", local = TRUE)
 source("source/formatCode.R", local = TRUE)
 source("source/downloadPlot.R", local = TRUE)

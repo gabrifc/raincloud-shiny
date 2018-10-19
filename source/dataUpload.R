@@ -1,3 +1,6 @@
+# For gather
+library("tidyr")
+
 dataUploadAndManipulation <- function(input, output, session) {
   
   # The selected file, if any
@@ -42,10 +45,13 @@ dataUploadAndManipulation <- function(input, output, session) {
       filter(value != "")
   })
   
+  name <- reactive({userFile()$name})
+  
   # finalData <- reactive({reshapedData[complete.cases(reshapedData()),]})
   
   return(list(
     df = df,
-    conditions = conditions
+    conditions = conditions,
+    name = name
   ))
 }

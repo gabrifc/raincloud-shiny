@@ -1,24 +1,17 @@
-library("readr")
-library("ggplot2")
-library("dplyr")
+# library("readr")
+# library("ggplot2")
+# library("dplyr")
 # library(lavaan)
 # library(smooth)
 # library(Hmisc)
-library("shiny")
-# For hidden
+# library("shiny")
+## For hidden
 # library("shinyjs")
-library("tidyr")
-library("tidyverse")
-library("RColorBrewer")
-library("cowplot")
-library("ggsci")
-library("ggghost")
-library("ggpubr")
-# Check if still needed
-library("gsubfn")
-library("glue")
-# For the beeswarm dots
-library("ggbeeswarm")
+# library("tidyr")
+# library("tidyverse")
+## Check if still needed
+# library("glue")
+
 
 
 # packages <- c("cowplot", "readr", "ggplot2" , "dplyr", "lavaan", "smooth",
