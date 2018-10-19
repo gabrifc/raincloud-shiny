@@ -252,9 +252,10 @@ createPlot <- function(input, plotData) {
     plot <- plot + theme_void()
   }
   if (input$plotMajorGrid == TRUE) {
-    plot <- plot + background_grid(major = "xy", minor = "none")
     if (input$plotMinorGrid == TRUE) {
       plot <- plot + background_grid(major = "xy", minor = "xy")
+    } else {
+      plot <- plot + background_grid(major = "xy", minor = "none")
     }
   }
   if (input$plotLegend == FALSE) {
