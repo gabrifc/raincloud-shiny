@@ -93,9 +93,11 @@ ui <- fluidPage (
                                                                      FALSE)
                                                 ),
                                                 column(6,
-                                                       checkboxInput("plotMinorGrid", 
-                                                                     "Plot Minor Grid", 
-                                                                     FALSE)
+                                                       conditionalPanel(
+                                                         condition = 'input.plotMajorGrid == true',
+                                                         checkboxInput("plotMinorGrid", 
+                                                                       "Plot Minor Grid", 
+                                                                       FALSE))
                                                 ),
                                                 column(12,
                                                        h3("Theme and colors")),
