@@ -101,18 +101,20 @@ server <- function(input, output, session) {
     tags$pre(summaryPrint())
   })
 
+  ## last_plot() is not always updated.
+  ## returnPlot()$plot is a ggghost object, not a ggplot object. Careful.
   output$rainCloudpng <- callModule(downloadPlot, id = "rainCloudpng",
-                                    plot = last_plot(),
+                                    plot = returnPlot()$plot,
                                     fileType = "png",
                                     width = input$width / 72,
                                     height = input$height / 72)
   output$rainCloudtiff <- callModule(downloadPlot, id = "rainCloudtiff", 
-                                    plot = last_plot(),
+                                    plot = returnPlot()$plot,
                                     fileType = 'tiff',
                                     width = input$width / 72,
                                     height = input$height / 72)
   output$rainCloudpdf <- callModule(downloadPlot, id = "rainCloudpdf",
-                                    plot = last_plot(),
+                                    plot = returnPlot()$plot,
                                     fileType = "pdf",
                                     width = input$width / 72,
                                     height = input$height / 72)
