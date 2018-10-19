@@ -425,10 +425,7 @@ ui <- fluidPage (
                              column(12,
                                     uiOutput("statsCombinationsUI"))),
                            column(6,
-                                  numericInput('statsLabelY',
-                                               label = h4("Significance Label Y"), 
-                                               min = 0, 
-                                               value = 500)
+                                  uiOutput("statsLabelUI")
                            ),
                            column(6,
                                   selectInput('statsLabelFormat',

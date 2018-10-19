@@ -68,6 +68,12 @@ server <- function(input, output, session) {
     
   })
 
+  output$statsLabelUI <- renderUI({
+    numericInput('statsLabelY',
+                 label = h4("Significance Label Y"), 
+                 min = 0, 
+                 value = round(max(processedData$df()$value)*1.05))
+  })
   # Render the uploaded Data
   # output$rainCloudData <- renderDataTable({
   #   processedData$df()
