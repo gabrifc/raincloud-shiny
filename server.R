@@ -74,23 +74,24 @@ server <- function(input, output, session) {
                  min = 0, 
                  value = round(max(processedData$df()$value)*1.05))
   })
+  
   # Render the uploaded Data
   # output$rainCloudData <- renderDataTable({
   #   processedData$df()
   # })
 
+  ## Update returnPlot on input changes
   returnPlot <- reactive({
     createPlot(
       input = input,
       plotData = processedData$df()
     )
   })
-
+  
+  ## Plot the plot
   output$rainCloudPlot <- renderPlot(returnPlot()$plot,
-    height = function(x) input$height,
-    width = function(x) input$width
-  )
-
+                                     height = function(x) input$height,
+                                     width = function(x) input$width)
   # Print the summary code
   output$rainCloudCode <- renderPrint({
     plotSummary <- returnPlot()$summary
@@ -101,29 +102,85 @@ server <- function(input, output, session) {
         code = plotSummary
       )
     })
+    
     print(h3("Relevant Plot Code"))
     print(tags$small("Please take into account that some of code below may be a bit unorthodox
-               due to dealing with input constraints."))
+                due to dealing with input constraints."))
     tags$pre(summaryPrint())
   })
 
-  ## last_plot() is not always updated.
+  ## last_plot() is not updated if we change the input data.
   ## returnPlot()$plot is a ggghost object, not a ggplot object. Careful.
-  output$rainCloudpng <- callModule(downloadPlot, id = "rainCloudpng",
-                                    plot = returnPlot()$plot,
-                                    fileType = "png",
-                                    width = input$width / 72,
-                                    height = input$height / 72)
-  output$rainCloudtiff <- callModule(downloadPlot, id = "rainCloudtiff", 
-                                    plot = returnPlot()$plot,
-                                    fileType = 'tiff',
-                                    width = input$width / 72,
-                                    height = input$height / 72)
-  output$rainCloudpdf <- callModule(downloadPlot, id = "rainCloudpdf",
-                                    plot = returnPlot()$plot,
-                                    fileType = "pdf",
-                                    width = input$width / 72,
-                                    height = input$height / 72)
+  ## returnPlot()$plot is not updated if we change the input data. I assume that
+  ## is a problem with reactivity, modules and ids but I am not knowledgeable 
+  ## enough with that.
+  # output$rainCloudpng <- callModule(downloadPlot, id = "rainCloudpng",
+  #                                   plot = print(returnPlot()$plot),
+  #                                   fileType = "png",
+  #                                   width = input$width / 72,
+  #                                   height = input$height / 72)
+  # output$rainCloudtiff <- callModule(downloadPlot, id = "rainCloudtiff", 
+  #                                   plot = returnPlot()$plot,
+  #                                   fileType = 'tiff',
+  #                                   width = input$width / 72,
+  #                                   height = input$height / 72)
+  # output$rainCloudpdf <- callModule(downloadPlot, id = "rainCloudpdf",
+  #                                   plot = returnPlot()$plot,
+  #                                   fileType = "pdf",
+  #                                   width = input$width / 72,
+  #                                   height = input$height / 72)
+  
+  ## Temporal solution.
+  output$png <- downloadHandler(
+    filename = function() {
+      paste(processedData$name(), "png", sep = ".")
+    },
+    content = function(file) {
+      ggsave(
+        filename = file,
+        plot = print(returnPlot()$plot),
+        device = "png",
+        width = input$width / 72,
+        height = input$height / 72,
+        units = "in",
+        dpi = 300
+      )
+    }
+  )
+  
+  output$pdf <- downloadHandler(
+    filename = function() {
+      paste(processedData$name(), "pdf", sep = ".")
+    },
+    content = function(file) {
+      ggsave(
+        filename = file,
+        plot = print(returnPlot()$plot),
+        device = "pdf",
+        width = input$width / 72,
+        height = input$height / 72,
+        units = "in",
+        dpi = 300
+      )
+    }
+  )
+  
+  output$tiff <- downloadHandler(
+    filename = function() {
+      paste(processedData$name(), "tiff", sep = ".")
+    },
+    content = function(file) {
+      ggsave(
+        filename = file,
+        plot = print(returnPlot()$plot),
+        device = "tiff",
+        width = input$width / 72,
+        height = input$height / 72,
+        units = "in",
+        dpi = 300
+      )
+    }
+  )
   
   # Should probably move that but it's convenient while editing.
   output$rainCloudAbout <- renderUI ({

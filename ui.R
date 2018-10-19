@@ -488,18 +488,25 @@ ui <- fluidPage (
                   column(12,
                          h3("Save the plot")),
       ## Code is prepared for a selectInput with the option formats, but users
-      ## requested these 3 buttons as they find it easier.
-      
+      ## requested these 3 buttons as they find it easier. 
+      ## Harcoding fixes problem with plotting outdated data, 
+      ## but needs to be studied.
       column(12,
              p("Select the format in which you wish to save the generated plot."),
              column(4,
-                    downloadPlotUI(id = "rainCloudpng", 
+                    # downloadPlotUI(id = "rainCloudpng", 
+                    #                label = "png"),
+                    downloadButton("png", 
                                    label = "png")),
              column(4,
-                    downloadPlotUI(id = "rainCloudtiff", 
+                    # downloadPlotUI(id = "rainCloudtiff", 
+                    #                label = "tiff"),
+                    downloadButton("tiff", 
                                    label = "tiff")),
              column(4,
-                    downloadPlotUI(id = "rainCloudpdf", 
+                    # downloadPlotUI(id = "rainCloudpdf", 
+                    #                label = "pdf"),
+                    downloadButton("pdf", 
                                    label = "pdf"))),
       ## Clearfix
       tags$div(class = 'clearfix')
