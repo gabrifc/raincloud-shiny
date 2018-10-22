@@ -27,7 +27,7 @@ scale_shape_identity() + ')
        plot.title = element_text(size = {input$titleFontSize}),
        axis.title = element_text(size = {input$axisFontSize})) + ')
   } else {
-    p <- paste0(p, '{input$plotTheme}(plot.title = element_text(size = {input$titleFontSize}),
+    p <- paste0(p, 'theme(plot.title = element_text(size = {input$titleFontSize}),
        axis.title = element_text(size = {input$axisFontSize})) + ')
   }
   
