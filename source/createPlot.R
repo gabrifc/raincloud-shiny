@@ -1,7 +1,10 @@
+## ggplot & cowplot theme
 library("ggplot2")
 library("cowplot")
 ## Statistics
 library("ggpubr")
+## 95% CI interval for the mean
+library("Hmisc")
 ## Beeswarm dots
 library("ggbeeswarm")
 ## Already loaded from ui.R

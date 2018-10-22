@@ -8,6 +8,7 @@
 #
 
 library('glue')
+library('stringr')
 
 #source("source/libraries.R", local = TRUE)
 source("source/createPlot.R", local = TRUE)
@@ -91,6 +92,7 @@ server <- function(input, output, session) {
     )
     )
   })
+  
   # Render the uploaded Data
   # output$rainCloudData <- renderDataTable({
   #   processedData$df()
