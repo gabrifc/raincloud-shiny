@@ -108,7 +108,8 @@ scale_shape_identity() + ')
   ## Violin Plots
   if (input$violinPlots) {
     p <- paste0(p, {input$violinType}, '(position = position_nudge(x = {input$violinNudge}, y = 0),
-             adjust = {input$violinAdjust}, 
+             adjust = {input$violinAdjust},', ifelse (input$violinQuantiles && input$violinType == "geom_violin",'
+             draw_quantiles = c(0.5),',''),'
              alpha = {input$violinAlpha}, 
              trim = {input$violinTrim}, 
              scale = "{input$violinScale}") + ')
@@ -116,12 +117,11 @@ scale_shape_identity() + ')
   
   ## BoxPlots 
   if (input$boxPlots) {
-    outlierShape <- ifelse(input$boxplotOutliers, 16, "NA")
     p <- paste0(p, 'geom_boxplot(aes(x = as.numeric(condition)+ {input$boxplotNudge}, y = value), 
              notch = {input$boxplotNotch}, 
              width = {input$boxplotWidth}, 
              varwidth = {input$boxplotBoxWidth}, 
-             outlier.shape = ', outlierShape, ', 
+             outlier.shape = ', ifelse(input$boxplotOutliers, 16, NA), ', 
              alpha = {input$boxplotAlpha}, 
              colour = "black", 
              show.legend = FALSE) + ')
