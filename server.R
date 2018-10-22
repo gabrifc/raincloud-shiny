@@ -106,9 +106,8 @@ server <- function(input, output, session) {
     height = function(x) input$height,
     width = function(x) input$width,
     {plotData = processedData$df()
-    p <- eval(parse(text = glue(plotCode())))
-    p
-  })
+    plotEval <<- eval(parse(text = glue(plotCode())))
+    plotEval})
   
   # Print the summary code
   output$rainCloudCode <- renderText({
@@ -153,7 +152,7 @@ server <- function(input, output, session) {
     content = function(file) {
       ggsave(
         filename = file,
-        plot = print(returnPlot()$plot),
+        plot = plotEval,
         device = "png",
         width = input$width / 72,
         height = input$height / 72,
@@ -170,7 +169,7 @@ server <- function(input, output, session) {
     content = function(file) {
       ggsave(
         filename = file,
-        plot = print(returnPlot()$plot),
+        plot = plotEval,
         device = "pdf",
         width = input$width / 72,
         height = input$height / 72,
@@ -187,7 +186,7 @@ server <- function(input, output, session) {
     content = function(file) {
       ggsave(
         filename = file,
-        plot = print(returnPlot()$plot),
+        plot = plotEval,
         device = "tiff",
         width = input$width / 72,
         height = input$height / 72,
