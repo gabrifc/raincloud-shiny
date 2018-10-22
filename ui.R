@@ -106,17 +106,17 @@ ui <- fluidPage (
                                                        selectInput("plotTheme", 
                                                                    label = h4("Theme"),
                                                                    choices = list(
-                                                                     "Default (Grey)" = "default",
-                                                                     "Black & White" = "bw",
-                                                                     "Linedraw" = "linedraw",
-                                                                     "Light" = "light",
-                                                                     "Dark" = "dark",
-                                                                     "Minimal" = "minimal",
-                                                                     "Classic" = "classic",
-                                                                     "Void" = "void",
-                                                                     "Cowplot" = "None"
+                                                                     "Default (Grey)" = "theme_grey()",
+                                                                     "Black & White" = "theme_bw()",
+                                                                     "Linedraw" = "theme_linedraw()",
+                                                                     "Light" = "theme_light()",
+                                                                     "Dark" = "theme_dark()",
+                                                                     "Minimal" = "theme_minimal()",
+                                                                     "Classic" = "theme_classic()",
+                                                                     "Void" = "theme_void()",
+                                                                     "Cowplot" = "theme_cowplot()"
                                                                    ),
-                                                                   selected = "None")),
+                                                                   selected = "theme_cowplot()")),
                                                 column(12,
                                                        pickerInput(
                                                          inputId = "plotPalette", 
@@ -246,9 +246,7 @@ ui <- fluidPage (
                                                   "Empty Dot" = 1,
                                                   "Filled Dot" = 16,
                                                   "Square" = 15,
-                                                  "Triangle" = 17,
-                                                  "Variable" = "treatment"
-                                                ),
+                                                  "Triangle" = 17),
                                                 selected = 16)
                              ),
                              column(6,
@@ -280,10 +278,10 @@ ui <- fluidPage (
                                     selectInput("violinType", 
                                                 label = h4("Type of Violin"),
                                                 choices = list(
-                                                  "Full Violin" = "full",
-                                                  "Half Violin" = "half"
+                                                  "Full Violin" = "geom_violin",
+                                                  "Half Violin" = "geom_flat_violin"
                                                 ),
-                                                selected = "half")
+                                                selected = "geom_flat_violin")
                              ),
                              column(6,
                                     sliderInput("violinNudge", 
@@ -447,17 +445,18 @@ ui <- fluidPage (
                                                   FALSE)
                              ),
                              conditionalPanel(
+                               ## Maybe change to a dropdown menu with options.
                                condition = "input.statsMean == true",
                                column(6,
-                                      checkboxInput("statsMeanCI", 
-                                                    "Add 95% Confidence Interval", 
-                                                    FALSE),
-                                      checkboxInput("statsMeanSEM", 
-                                                    "Add SEM", 
-                                                    FALSE),
-                                      checkboxInput("statsMeanSD", 
-                                                    "Add SD", 
-                                                    FALSE)
+                                      selectInput('statsMeanErrorBars',
+                                                  label = h4("Add error bars to the mean"),
+                                                  choices = list(
+                                                    'None' = 'none',
+                                                    '95% Confidence Interval' = 'mean_cl_boot',
+                                                    'Stardard Error' = 'mean_se',
+                                                    'Standard Deviation' = 'mean_sd'
+                                                  ),
+                                                  selected = 'none')
                                ),
                                column(6,
                                       sliderInput("statsMeanWidth", 
@@ -521,7 +520,8 @@ ui <- fluidPage (
                     tabPanel("Plot & Code",
                              plotOutput("rainCloudPlot", 
                                         height = "auto"),
-                             htmlOutput("rainCloudCode")),
+                             h3("Relevant Plot Code"),
+                             verbatimTextOutput("rainCloudCode")),
                     tabPanel("About",
                              htmlOutput("rainCloudAbout"))
                     # tabPanel("Processed Data",

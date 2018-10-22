@@ -7,6 +7,8 @@
 #    http://shiny.rstudio.com/
 #
 
+library('glue')
+
 #source("source/libraries.R", local = TRUE)
 source("source/createPlot.R", local = TRUE)
 source("source/formatCode.R", local = TRUE)
@@ -80,33 +82,30 @@ server <- function(input, output, session) {
   #   processedData$df()
   # })
 
-  ## Update returnPlot on input changes
-  returnPlot <- reactive({
-    createPlot(
-      input = input,
-      plotData = processedData$df()
-    )
-  })
+  # Generate the Plot Code 
+  plotCode <- reactive({createPlot(input)})
   
   ## Plot the plot
-  output$rainCloudPlot <- renderPlot(returnPlot()$plot,
-                                     height = function(x) input$height,
-                                     width = function(x) input$width)
+  output$rainCloudPlot <- renderPlot(
+    height = function(x) input$height,
+    width = function(x) input$width,
+    {plotData = processedData$df()
+    p <- eval(parse(text = glue(plotCode())))
+    p
+  })
+  
   # Print the summary code
-  output$rainCloudCode <- renderPrint({
-    plotSummary <- returnPlot()$summary
+  output$rainCloudCode <- renderText({
     
-    summaryPrint <- reactive({
-      formatCode(
-        input = input,
-        code = plotSummary
-      )
-    })
-    
-    print(h3("Relevant Plot Code"))
-    print(tags$small("Please take into account that some of code below may be a bit unorthodox
-                due to dealing with input constraints."))
-    tags$pre(summaryPrint())
+    plotSummary <- glue(plotCode())
+  
+    ## We don't want all "+" to be followed by a linebreak, so only the ones 
+    ## have a space before them will do.
+    plotSummary <- str_replace_all(plotSummary, " \\+ ", " +\n  ")
+    ## Add a space before the rest now.
+    plotSummary <- str_replace_all(plotSummary, "\\)\\+ ", ") + ")
+
+    plotSummary
   })
 
   ## last_plot() is not updated if we change the input data.
