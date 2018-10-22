@@ -167,47 +167,6 @@ ui <- fluidPage (
                                                 ),
                                                 column(12,
                                                        hr())))),
-                  # column(12,
-                  #       h3('Roughify')),
-                  # column(12,
-                  #        checkboxInput("ggrough", 
-                  #                      "Add ggrough", 
-                  #                      FALSE)),
-                  # column(6,
-                  #        selectInput("ggroughFillStyle", 
-                  #                    label = h4("Fill Style"),
-                  #                    choices = list(
-                  #                      "solid",
-                  #                      "hachure",
-                  #                      "cross-hatch",
-                  #                      "dotdash"
-                  #                    ),
-                  #                    selected = "hachure")
-                  #        ),
-                  # column(6,
-                  #        sliderInput("ggroughAngle", 
-                  #                    label = h4("Line Angle"),
-                  #                    min = 0,
-                  #                    max = 360,
-                  #                    value = 60,
-                  #                    step = 10)
-                  # ),
-                  # column(6,
-                  #        sliderInput("ggroughFillWeight", 
-                  #                    label = h4("Fill Weight"),
-                  #                    min = 1,
-                  #                    max = 10,
-                  #                    value = 4,
-                  #                    step = 1)
-                  # ),
-                  # column(6,
-                  #        sliderInput("ggroughRoughness", 
-                  #                    label = h4("Roughness"),
-                  #                    min = 0,
-                  #                    max = 4,
-                  #                    value = 1.5,
-                  #                    step = 0.25)
-                  # )
                   tabPanel("Dots",
                            column(12,
                                   h3("Data Points")),
@@ -300,14 +259,20 @@ ui <- fluidPage (
                              column(6,
                                     checkboxInput("violinTrim", 
                                                   "Trim Edges to Data Points", 
-                                                  TRUE)
+                                                  TRUE),
+                                    conditionalPanel(
+                                      condition =' input.violinType == "geom_violin"',
+                                      checkboxInput("violinQuantiles",
+                                                    "Draw 50% Quantile",
+                                                    TRUE)
+                                    )
                              ),
                              column(6,
                                     sliderInput("violinAlpha", 
                                                 label = h4("Transparency"),
                                                 min = 0,
                                                 max = 1,
-                                                value = 1,
+                                                value = 0.6,
                                                 step = 0.05)
                              )
                            ),
@@ -381,37 +346,36 @@ ui <- fluidPage (
                            ## I could do all of that with updateSelectInput probably but I like how this looks.
                                   conditionalPanel(
                                     condition = 'input.statistics == true',
-                                    column(12,
-                                           column(6,
-                                                  selectInput("statsType", 
-                                                              label = h4("Type of Test"),
-                                                              choices = list(
-                                                                "Parametric" = "parametric",
-                                                                "Non-parametric" = "nonParametric"),
-                                                              selected = "nonParametric")
-                                           ),
-                                           ## Parametric
-                                           conditionalPanel(
-                                             condition = 'input.statsType == "parametric"',
-                                             column(6,
-                                                    checkboxInput("statsTtest", 
-                                                                  "Pairwise (T-test)", 
-                                                                  FALSE),
-                                                    checkboxInput("statsAnova", 
-                                                                  "Multiple (ANOVA)", 
-                                                                  FALSE)
-                                             )),
-                                           ## Non Parametric
-                                           conditionalPanel(
-                                             condition = 'input.statsType == "nonParametric"',
-                                             column(6,
-                                                    checkboxInput("statsWilcoxon", 
-                                                                  "Pairwise (Wilcoxon Test)", 
-                                                                  FALSE),
-                                                    checkboxInput("statsKruskal", 
-                                                                  "Multiple (Kruskal-Wallis)", 
-                                                                  FALSE)))
+                                    column(6,
+                                           selectInput("statsType", 
+                                                       label = h4("Type of Test"),
+                                                       choices = list(
+                                                         "Parametric" = "parametric",
+                                                         "Non-parametric" = "nonParametric"),
+                                                       selected = "nonParametric")
                                     ),
+                                    ## Parametric
+                                    conditionalPanel(
+                                      condition = 'input.statsType == "parametric"',
+                                      column(6,
+                                             checkboxInput("statsTtest", 
+                                                           "Pairwise (T-test)", 
+                                                           FALSE),
+                                             checkboxInput("statsAnova", 
+                                                           "Multiple (ANOVA)", 
+                                                           FALSE)
+                                      )),
+                                    ## Non Parametric
+                                    conditionalPanel(
+                                      condition = 'input.statsType == "nonParametric"',
+                                      column(6,
+                                             checkboxInput("statsWilcoxon", 
+                                                           "Pairwise (Wilcoxon Test)", 
+                                                           FALSE),
+                                             checkboxInput("statsKruskal", 
+                                                           "Multiple (Kruskal-Wallis)", 
+                                                           FALSE))),
+                                    div(class="clearfix"),
                            conditionalPanel(
                              condition = '(input.statsType == "nonParametric" && input.statsWilcoxon == true) || (input.statsType == "parametric" && input.statsTtest == true)',
                              column(12,
