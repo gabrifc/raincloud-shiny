@@ -141,10 +141,10 @@ scale_shape_identity() + ')
     if (input$statsMeanErrorBars != 'none') {
       p <- paste0(p, 'stat_summary(fun.data = {input$statsMeanErrorBars} ,
              geom = "errorbar",
-width = {input$statsMeanWidth},
+             width = {input$statsMeanWidth},
              position = position_nudge(x = {input$statsMeanNudge}, y = 0),
              size = {input$statsMeanSize},
-             color = "black")')
+             color = "black") + ')
     }
   }
   
