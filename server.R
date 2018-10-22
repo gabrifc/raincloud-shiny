@@ -77,6 +77,20 @@ server <- function(input, output, session) {
                  value = round(max(processedData$df()$value)*1.05))
   })
   
+  output$scaleLimitsUI <- renderUI({
+   tagList(
+     column(6,
+           numericInput("minScale", 
+                        label = h4("Min Scale Limit"), 
+                        value = 0)
+    ),
+    column(6,
+           numericInput("maxScale", 
+                        label = h4("Max Scale Limit"), 
+                        value = round(max(processedData$df()$value)*1.1))
+    )
+    )
+  })
   # Render the uploaded Data
   # output$rainCloudData <- renderDataTable({
   #   processedData$df()

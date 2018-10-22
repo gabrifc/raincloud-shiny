@@ -51,16 +51,7 @@ ui <- fluidPage (
                                                                      TRUE)),
                                                 conditionalPanel(
                                                   condition = "input.autoScale == false",
-                                                  column(6,
-                                                         numericInput("minScale", 
-                                                                      label = h4("Min Scale Limit"), 
-                                                                      value = 0)
-                                                  ),
-                                                  column(6,
-                                                         numericInput("maxScale", 
-                                                                      label = h4("Max Scale Limit"), 
-                                                                      value = 2000)
-                                                  )
+                                                  uiOutput("scaleLimitsUI")
                                                 ),
                                                 column(12,
                                                        hr())),
