@@ -1,16 +1,14 @@
 #
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
+# TODO: Download Zip.
+# TODO: Modularize downloads.
+# TODO: Add About & Intro.
+# TODO: Add plot Templates.
+# TODO: Add notice if length of conditions is lower than 2.
 #
 
 library('glue')
 library('stringr')
 
-#source("source/libraries.R", local = TRUE)
 source("source/createPlot.R", local = TRUE)
 source("source/formatCode.R", local = TRUE)
 source("source/downloadPlot.R", local = TRUE)
@@ -18,16 +16,7 @@ source("source/dataUpload.R", local = TRUE)
 
 server <- function(input, output, session) {
   
-  processedData <- callModule(dataUploadAndManipulation, "rainCloud")
-
-  # Conditions to upload the UI if necessary
-  # output$statsControlUI <- renderUI({
-  #   conditionList <- as.list(processedData$conditions())
-  #   selectInput("statsControl", 
-  #                      label = h4("Control Condition"),
-  #                      choices = conditionList, 
-  #                      selected = conditionList[[1]])
-  # })
+  inputData <- callModule(dataUpload, "rainCloud")
   
   output$statsCombinationsUI <- renderUI({
     # This is wrong on so many levels but is the only way I found it f** works.
@@ -63,17 +52,26 @@ server <- function(input, output, session) {
     #                    label = h4("Conditions To Test"),
     #                    choices = combinationList)
     
-    combinationList <- combn(processedData$conditions(), 2, FUN = paste, collapse = 'vs')
+    combinationList <- combn(input$filterColumns, 2, FUN = paste, 
+                             collapse = 'vs')
     selectInput("statsCombinations", 
                 label = h4("Conditions To Test"),
                 choices = combinationList,
                 multiple = TRUE)
-    
   })
 
+  output$DataFilterColumns <- renderUI({
+    req(inputData$conditions())
+    selectInput('filterColumns',
+                label = h4("Select Columns to Plot"), 
+                choices = inputData$conditions(),
+                selected = inputData$conditions(),
+                multiple = TRUE)
+  })
+  
   output$statsLabelUI <- renderUI({
     numericInput('statsLabelY',
-                 label = h4("Significance Label Y"), 
+                 label = h4("Multiple Significance Label Y height"), 
                  min = 0, 
                  value = round(max(processedData$df()$value)*1.05))
   })
@@ -93,38 +91,34 @@ server <- function(input, output, session) {
     )
   })
   
-  # Render the uploaded Data
-  # output$rainCloudData <- renderDataTable({
-  #   processedData$df()
-  # })
-
+  # Process the data. This is a reactive!
+  
+  processedData <- reactive({callModule(dataManipulation, "rainCloud", 
+                              inputData,
+                              input$filterColumns)})
   # Generate the Plot Code 
   plotCode <- reactive({createPlot(input)})
   
-  ## Plot the plot
+  ## Output the plot
   output$rainCloudPlot <- renderPlot(
     height = function(x) input$height,
     width = function(x) input$width,
-    {plotData = processedData$df()
-    plotEval <<- eval(parse(text = glue(plotCode())))
-    plotEval})
+    {## We need to declate the 'plotData' variable in this context.
+      plotData = processedData()$df() 
+      
+      ## And evaluate the code to output the plot.
+      ## Using <<- we don't have to call it again in the downloads. 
+      plotEval <<- eval(parse(text = glue(plotCode())))
+      plotEval})
   
-  # Print the summary code
+  # Print the code
   output$rainCloudCode <- renderText({
-    
-    plotSummary <- glue(plotCode())
-  
-    ## We don't want all "+" to be followed by a linebreak, so only the ones 
-    ## have a space before them will do.
-    plotSummary <- str_replace_all(plotSummary, " \\+ ", " +\n  ")
-    ## Add a space before the rest now.
-    plotSummary <- str_replace_all(plotSummary, "\\)\\+ ", ") + ")
-
-    plotSummary
+    ## We don't render the Code without a file.
+    req(inputData$name())
+    formatCode(input, inputData$code(), processedData()$code(), plotCode())
   })
 
   ## last_plot() is not updated if we change the input data.
-  ## returnPlot()$plot is a ggghost object, not a ggplot object. Careful.
   ## returnPlot()$plot is not updated if we change the input data. I assume that
   ## is a problem with reactivity, modules and ids but I am not knowledgeable 
   ## enough with that.
@@ -147,7 +141,7 @@ server <- function(input, output, session) {
   ## Temporal solution.
   output$png <- downloadHandler(
     filename = function() {
-      paste(processedData$name(), "png", sep = ".")
+      paste(inputData$name(), "png", sep = ".")
     },
     content = function(file) {
       ggsave(
@@ -164,7 +158,7 @@ server <- function(input, output, session) {
   
   output$pdf <- downloadHandler(
     filename = function() {
-      paste(processedData$name(), "pdf", sep = ".")
+      paste(inputData$name(), "pdf", sep = ".")
     },
     content = function(file) {
       ggsave(
@@ -181,7 +175,7 @@ server <- function(input, output, session) {
   
   output$tiff <- downloadHandler(
     filename = function() {
-      paste(processedData$name(), "tiff", sep = ".")
+      paste(inputData$name(), "tiff", sep = ".")
     },
     content = function(file) {
       ggsave(

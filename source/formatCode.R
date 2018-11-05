@@ -1,57 +1,54 @@
-library("gsubfn")
+formatCode <- function(input, dataLoadingCode, dataManipulationCode, plotCode) {
+  
+  librariesCode <- getLibrariesCode(input)
+  
+  prePlotCode <- '## And plot the data'
+  
+  allCode <- glue(paste(librariesCode, 
+                        dataLoadingCode, 
+                        dataManipulationCode,
+                        prePlotCode, 
+                        plotCode, 
+                        sep = "\n"))
+  ## We don't want all "+" to be followed by a linebreak, so only the ones 
+  ## have a space before them will do.
+  allCode <- str_replace_all(allCode, " \\+ ", " +\n  ")
+  ## Add a space before the rest now.
+  allCode <- str_replace_all(allCode, "\\)\\+ ", ") + ")
+  
+  return(allCode)
+}
 
-formatCode <- function(input, code) {
-  # print(summaryPrint)
-  
-  # Easy but doesn't add quotes where needed.
-  # summaryPrint2 <- glue(gsub("(input\\$\\w+)", "\\{\\1\\}", summaryPrint))
-  # print(summaryPrint2)
-  
-  # Exactly same result
-  # summaryPrint5 <- strsplit(gsub("(input\\$\\w+)", "@\\1@", summaryPrint), 
-  #                           split = "@")
-  # for (line in 1:length(summaryPrint5[[1]])) {
-  #   if (line %% 2 == 0) {
-  #     summaryPrint5[[1]][line] <- eval(parse(text = summaryPrint5[[1]][line]))
-  #   }
-  # }
-  # summaryPrint5 <- paste0(unlist(summaryPrint5), collapse = "")
-  # print(summaryPrint5)
-  
-  # Same as glue
-  # summaryPrint3 <- gsubfn("input\\$\\w+", function(x) eval(parse(text = x)), 
-  #                        summaryPrint)
-  # print(summaryPrint3)
-  
-  # Sometimes does not work
-  # summaryPrint4 <- gsubfn("input\\$\\w+", function(x) identity(x), 
-  #                        summaryPrint)
-  # print(summaryPrint4)
-  
-  # Directly gives error
-  # summaryPrint5 <- fn$identity(summaryPrint) -- should work but gives Error
-  # print(summaryPrint5)
-  
-  # Manually add quotes
-  checkQuotes <- function (x) {
-    # Doesn't  work
-    # x <- identity(x)
-    x <- eval(parse(text = x))
-    # Check if only numbers
-    if(!grepl("[A-Za-z]", x)) {
-      return(x)
-    } else {
-      # There are letters, add quotes
-      return(shQuote(x))
-    }
+getLibrariesCode <- function(input) {
+  librariesUsed <- c('ggplot2', 'tidyr', 'dplyr')
+  if(input$plotTheme == 'theme_cowplot()') {
+    librariesUsed <- c(librariesUsed, 'cowplot')
+  }
+  ggsciPalettes <- c("NPG", "AAAS", "NEJM", "Lancet", "JAMA", "JCO", "UCSCGB", 
+                     "LocusZoom", "IGV", "UChicago", "UChicago Light", 
+                     "UChicago Dark", "Star Trek", "Tron Legacy", "Futurama", 
+                     "Rick and Morty", "The Simpsons")
+  if(input$plotPalette %in% ggsciPalettes) {
+    librariesUsed <- c(librariesUsed, 'ggsci')
+  } else {
+    librariesUsed <- c(librariesUsed, 'RColorBewer')
+  }
+  if(input$plotDots && (input$dotColumnType == 'beeswarm')) {
+    librariesUsed <- c(librariesUsed, 'ggbeeswarm')
+  }
+  if(input$plotViolins && (input$violinType == 'geom_flat_violin')) {
+    librariesUsed <- c(librariesUsed, 'flatViolin')
+  }
+  if(input$statistics) {
+    librariesUsed <- c(librariesUsed, 'ggpubr')
+  }
+  if(input$statsMeanErrorBars == 'mean_cl_boot') {
+    librariesUsed <- c(librariesUsed, 'Hmisc')
   }
   
-  code <- gsubfn("input\\$\\w+", function(x) checkQuotes(x), 
-                 code)
-  ## Add linebreaks
-  code <- gsub('\\+ (\\D)', "+ \n\t\\1", code)
+  librariesCode <- paste(paste0('library("',librariesUsed, '") \n'), 
+                         collapse = "")
+  librariesCode <- paste0('## Load the required libraries\n', librariesCode)
   
-  #writeLines(gsub('\\+', "+ \n", cat(summaryPrint[[1]], sep = "\"")))
-  
-  return(code)
+  return(librariesCode)
 }

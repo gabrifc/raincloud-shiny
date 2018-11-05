@@ -1,7 +1,9 @@
 # For gather
 library("tidyr")
+# For the code (already loaded from server.R)
+# library("glue")
 
-dataUploadAndManipulation <- function(input, output, session) {
+dataUpload <- function(input, output, session) {
   
   # The selected file, if any
   userFile <- reactive({
@@ -36,22 +38,65 @@ dataUploadAndManipulation <- function(input, output, session) {
     colnames(inputData())
   })
   
+  name <- reactive({userFile()$name})
+  
+  code <- reactive({
+    quoteCode <- ifelse(input$quote == '\'', '"{input$quote}"', '\'{input$quote}\'')
+    sepCode <- ifelse(input$sep == '\t', '\\t', '{input$sep}')
+    glue('## Load the data
+  inputData <- read.delim2("C:\\fakepath\\file.txt",
+  header = {input$header},
+  sep = \'', sepCode, '\',
+  quote = ', quoteCode, ',
+  check.names = FALSE,
+  dec = \'{input$decimalPoint}\')\n\n')})
+  
+  return(list(
+    inputData = inputData,
+    conditions = conditions,
+    name = name,
+    code = code
+  ))
+}
+
+dataManipulation <- function(input, output, session, inputData, filterConditions) {
+  req(filterConditions)
+  # Cleaning here is good for the 'as.numeric' of the boxplots.
+  cleanedData <- inputData$inputData()[,filterConditions]
+  
   df <- reactive({
-    gather(inputData(),
+    gather(cleanedData,
            condition,
            value,
-           conditions(),
+           filterConditions,
            factor_key = TRUE) %>%
+      filter(condition %in% filterConditions) %>%
       filter(value != "")
   })
   
-  name <- reactive({userFile()$name})
   
-  # finalData <- reactive({reshapedData[complete.cases(reshapedData()),]})
+## Add code for selecting columns or rearranging them.
+  filterConditionsText <- 'c('
+  for (i in 1:length(filterConditions)) {
+    filterConditionsText <- glue(filterConditionsText, '"{filterConditions[i]}",')
+  }
+  filterConditionsText <- substr(filterConditionsText,1,nchar(filterConditionsText)-2)
+  filterConditionsText <- glue(filterConditionsText, ')')
+
+    code <- reactive({
+    glue('## Select the columns and reorder the data if needed
+inputData <- inputData[,{filterConditionsText}]
+
+## Reformat the data for ggplot
+plotData <- gather(inputData,
+  condition,
+  value,
+  colnames(inputData),
+  factor_key = TRUE) %>%
+  filter(value != "") \n\n')})
   
   return(list(
     df = df,
-    conditions = conditions,
-    name = name
+    code = code
   ))
 }

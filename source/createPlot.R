@@ -27,11 +27,11 @@ scale_shape_identity() + ')
   
   if (input$plotLegend == FALSE) {
     p <- paste0(p, 'theme(legend.position = "none",
-       plot.title = element_text(size = {input$titleFontSize}),
-       axis.title = element_text(size = {input$axisFontSize})) + ')
+             plot.title = element_text(size = {input$titleFontSize}),
+             axis.title = element_text(size = {input$axisFontSize})) + ')
   } else {
     p <- paste0(p, 'theme(plot.title = element_text(size = {input$titleFontSize}),
-       axis.title = element_text(size = {input$axisFontSize})) + ')
+             axis.title = element_text(size = {input$axisFontSize})) + ')
   }
   
   if (input$plotMajorGrid == TRUE) {
@@ -109,7 +109,7 @@ scale_shape_identity() + ')
   }
   
   ## Violin Plots
-  if (input$violinPlots) {
+  if (input$plotViolins) {
     p <- paste0(p, {input$violinType}, '(position = position_nudge(x = {input$violinNudge}, y = 0),
              adjust = {input$violinAdjust},', ifelse (input$violinQuantiles && input$violinType == "geom_violin",'
              draw_quantiles = c(0.5),',''),'
@@ -142,7 +142,7 @@ scale_shape_identity() + ')
     
     ## Adding error bars to the mean
     if (input$statsMeanErrorBars != 'none') {
-      p <- paste0(p, 'stat_summary(fun.data = {input$statsMeanErrorBars} ,
+      p <- paste0(p, 'stat_summary(fun.data = {input$statsMeanErrorBars},
              geom = "errorbar",
              width = {input$statsMeanWidth},
              position = position_nudge(x = {input$statsMeanNudge}, y = 0),
@@ -155,50 +155,40 @@ scale_shape_identity() + ')
   ## do it. At least we should print a notice. Take a look at package rstatix 
   ## (https://github.com/kassambara/rstatix)
   
+  ## Things to add:
+  # ref.group = condition or .all.
+  # p.adjust.method = "{input$statsPairwiseCorrection}",
+  # method.args = list(p.adjust.method = "{input$statsPairwiseCorrection}"),
+  
   ## Significance
   if (input$statistics) {
-    if(!is.null(input$statsCombinations)) {
+    if (!is.null(input$statsCombinations)) {
       ## Get the Combinations for the pairwise comparisons as text
       ## Would be nice to clean and search for something more elegant.
-      
-      ## Get the combinations in a list.
-      statsPairwiseTests <- strsplit(input$statsCombinations, 'vs')
-      ## Start the list string.
-      statsPairwiseTestsText <- "list("
-      for (i in 1:length(statsPairwiseTests)) {
-        statsPairwiseTestsText <- paste0(statsPairwiseTestsText,
-                                         glue('c("{statsPairwiseTests[[i]][1]}",\\
-"{statsPairwiseTests[[i]][2]}"), '))}
-      ## Remove trailing ", " and add the closing parenthesis of the list.
-      statsPairwiseTestsText <- substr(statsPairwiseTestsText,1,nchar(statsPairwiseTestsText)-2)
-      statsPairwiseTestsText <- paste0(statsPairwiseTestsText, ')')
+      statsPairwiseTestsText <- getSelectedCombinations(input$statsCombinations)
+      if (input$statsType == 'parametric' && input$statsTtest) {
+        statsMethods <- 't.test'
+      } else if (input$statsType == 'nonParametric' && input$statsWilcoxon) {
+        statsMethods <- 'wilcox.test'
+      }
+      ## Double check to prevent 'statsMethods not found'.
+      if(input$statsTtest || input$statsWilcoxon) {
+        p <- paste0(p, 'stat_compare_means(mapping=aes(label = ',
+                    ifelse(input$statsLabelFormat == "..p.signif..", 
+                           '{input$statsLabelFormat}',
+                           'format.pval({input$statsLabelFormat}, digits = 5)'),'),
+             method = "',statsMethods,'", 
+             comparisons = ',statsPairwiseTestsText,') + ')
+      }
     }
-    if(input$statsType == 'parametric') {
-      ## Parametric
-      if(input$statsTtest && !is.null(input$statsCombinations)) {
-        ## tTest
-        p <- paste0(p, 'stat_compare_means(method = "t.test", 
-             label = "{input$statsLabelFormat}",
-             comparisons = ',statsPairwiseTestsText,') + ')
-        
-      } 
-      if (input$statsAnova) {
-        ## ANOVA
-        p <- paste0(p, 'stat_compare_means(method = "anova", 
+    
+    if (input$statsAnova) {
+      ## ANOVA
+      p <- paste0(p, 'stat_compare_means(method = "anova", 
              label.y = {input$statsLabelY}) + ')
-      }
-    } else {
-      ## Non Parametric
-      if(input$statsWilcoxon && !is.null(input$statsCombinations)) {
-        ## Wilcoxon
-        p <- paste0(p, 'stat_compare_means(method = "wilcox.test", 
-             label = "{input$statsLabelFormat}",
-             comparisons = ',statsPairwiseTestsText,') + ')
-      } 
-      if(input$statsKruskal) {
-        ## Kruskal-Wallis
-        p <- paste0(p, 'stat_compare_means(label.y = {input$statsLabelY}) + ')
-      }
+    } else if (input$statsKruskal) {
+      ## Kruskal-Wallis
+      p <- paste0(p, 'stat_compare_means(label.y = {input$statsLabelY}) + ')
     }
   }
   
@@ -213,4 +203,18 @@ scale_shape_identity() + ')
   p <- substr(p,1,nchar(p)-3)
   
   return(p)
+}
+
+getSelectedCombinations <- function(selectedCombinations) {
+  ## Get the combinations in a list.
+  statsPairwiseTests <- strsplit(selectedCombinations, 'vs')
+  ## Start the list string.
+  statsPairwiseTestsText <- "list("
+  for (i in 1:length(statsPairwiseTests)) {
+    statsPairwiseTestsText <- paste0(statsPairwiseTestsText,
+                                     glue('c("{statsPairwiseTests[[i]][1]}",\\
+                                          "{statsPairwiseTests[[i]][2]}"), '))}
+  ## Remove trailing ", " and add the closing parenthesis of the list.
+  statsPairwiseTestsText <- substr(statsPairwiseTestsText,1,nchar(statsPairwiseTestsText)-2)
+  statsPairwiseTestsText <- paste0(statsPairwiseTestsText, ')')
 }

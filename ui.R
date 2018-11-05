@@ -13,7 +13,8 @@ ui <- fluidPage (
     sidebarPanel(
       tabsetPanel(type = "pills",
                   tabPanel("Data",
-                           dataUploadUI("rainCloud", label = "File input")),
+                           dataUploadUI("rainCloud", label = "File input"),
+                           uiOutput('DataFilterColumns')),
                   tabPanel("Plot Options", 
                            tabsetPanel(type = "pills",
                                        tabPanel("Titles and Scale",
@@ -219,11 +220,11 @@ ui <- fluidPage (
                            column(12,
                                   h3("Violin Plots")),
                            column(12,
-                                  checkboxInput("violinPlots", 
+                                  checkboxInput("plotViolins", 
                                                 "Plot Violins", 
                                                 TRUE)),
                            conditionalPanel(
-                             condition = 'input.violinPlots == true',
+                             condition = 'input.plotViolins == true',
                              column(6,
                                     selectInput("violinType", 
                                                 label = h4("Type of Violin"),
@@ -344,106 +345,129 @@ ui <- fluidPage (
                                                 FALSE)
                            ),
                            ## I could do all of that with updateSelectInput probably but I like how this looks.
-                                  conditionalPanel(
-                                    condition = 'input.statistics == true',
-                                    column(6,
-                                           selectInput("statsType", 
-                                                       label = h4("Type of Test"),
-                                                       choices = list(
-                                                         "Parametric" = "parametric",
-                                                         "Non-parametric" = "nonParametric"),
-                                                       selected = "nonParametric")
-                                    ),
-                                    ## Parametric
-                                    conditionalPanel(
-                                      condition = 'input.statsType == "parametric"',
-                                      column(6,
-                                             checkboxInput("statsTtest", 
-                                                           "Pairwise (T-test)", 
-                                                           FALSE),
-                                             checkboxInput("statsAnova", 
-                                                           "Multiple (ANOVA)", 
-                                                           FALSE)
-                                      )),
-                                    ## Non Parametric
-                                    conditionalPanel(
-                                      condition = 'input.statsType == "nonParametric"',
-                                      column(6,
-                                             checkboxInput("statsWilcoxon", 
-                                                           "Pairwise (Wilcoxon Test)", 
-                                                           FALSE),
-                                             checkboxInput("statsKruskal", 
-                                                           "Multiple (Kruskal-Wallis)", 
-                                                           FALSE))),
-                                    div(class="clearfix"),
                            conditionalPanel(
-                             condition = '(input.statsType == "nonParametric" && input.statsWilcoxon == true) || (input.statsType == "parametric" && input.statsTtest == true)',
-                             column(12,
-                                    uiOutput("statsCombinationsUI"))),
-                           column(6,
-                                  uiOutput("statsLabelUI")
-                           ),
-                           column(6,
-                                  selectInput('statsLabelFormat',
-                                              label = h4("Pariwise value Format"),
-                                              choices = list(
-                                                'Significance (stars)' = 'p.signif',
-                                                'P Values' = 'p.format'
-                                              )))),
-                           
-                           ## Mean
-                             column(12,
-                                    h3("Mean")),
-                             column(12,
-                                    checkboxInput("statsMean", 
-                                                  "Plot mean", 
-                                                  FALSE)
+                             condition = 'input.statistics == true',
+                             column(6,
+                                    selectInput("statsType", 
+                                                label = h4("Type of Test"),
+                                                choices = list(
+                                                  "Parametric" = "parametric",
+                                                  "Non-parametric" = "nonParametric"),
+                                                selected = "nonParametric")
+                             ),
+                             ## Parametric
+                             conditionalPanel(
+                               condition = 'input.statsType == "parametric"',
+                               column(6,
+                                      checkboxInput("statsTtest", 
+                                                    "Pairwise (T-test)", 
+                                                    FALSE),
+                                      checkboxInput("statsAnova", 
+                                                    "Multiple (ANOVA)", 
+                                                    FALSE)
+                               )),
+                             ## Non Parametric
+                             conditionalPanel(
+                               condition = 'input.statsType == "nonParametric"',
+                               column(6,
+                                      checkboxInput("statsWilcoxon", 
+                                                    "Pairwise (Wilcoxon Test)", 
+                                                    FALSE),
+                                      checkboxInput("statsKruskal", 
+                                                    "Multiple (Kruskal-Wallis)", 
+                                                    FALSE))),
+                             div(class="clearfix"),
+                             conditionalPanel(
+                               ## Pairwise
+                               condition = '(input.statsType == "nonParametric" && input.statsWilcoxon == true) || (input.statsType == "parametric" && input.statsTtest == true)',
+                               column(12,
+                                      uiOutput("statsCombinationsUI")),
+                               column(6,
+                                      selectInput('statsLabelFormat',
+                                                  label = h4("Pairwise value Format"),
+                                                  choices = list(
+                                                    'Significance (stars)' = '..p.signif..',
+                                                    'P Values' = '..p.adj..'
+                                                  ))),
+                               # column(6,
+                               #        sliderInput('statsLabelDigits',
+                               #                    label = h4("P-Value digits"),
+                               #                    min = 1,
+                               #                    max = 5,
+                               #                    value = 3,
+                               #                    step = 1))
+                               column(6,
+                                      selectInput(('statsPairwiseCorrection'), 
+                                                  label = h4("Pairwise Multitest Correction"),
+                                                  choices = list(
+                                                    'Holm (1979)' = 'holm', 
+                                                    'Hochberg (1988)' = 'hochberg', 
+                                                    'Hommel (1988)' = 'hommel', 
+                                                    'Bonferroni' = 'bonferroni', 
+                                                    'Benjamini & Hochberg (1995) (FDR)' = 'BH', 
+                                                    'Benjamini & Yekutieli (2001)'= 'BY',
+                                                    'Tukey' = 'tukey',
+                                                    'None' = 'none'
+                                                  ),
+                                                  selected = 'BH'))
                              ),
                              conditionalPanel(
-                               ## Maybe change to a dropdown menu with options.
-                               condition = "input.statsMean == true",
+                               condition = '(input.statsType == "nonParametric" && input.statsKruskal == true) || (input.statsType == "parametric" && input.statsAnova == true)',
                                column(6,
-                                      selectInput('statsMeanErrorBars',
-                                                  label = h4("Add error bars to the mean"),
-                                                  choices = list(
-                                                    'None' = 'none',
-                                                    '95% Confidence Interval' = 'mean_cl_boot',
-                                                    'Stardard Error' = 'mean_se',
-                                                    'Standard Deviation' = 'mean_sd'
-                                                  ),
-                                                  selected = 'none')
-                               ),
-                               column(6,
-                                      sliderInput("statsMeanWidth", 
-                                                  label = h4("Mean Width"),
-                                                  min = 0,
-                                                  max = 1,
-                                                  value = 0.5,
-                                                  step = 0.05)
-                               ),
-                               column(6,
-                                      sliderInput("statsMeanNudge", 
-                                                  label = h4("Center Offset"),
-                                                  min = 0,
-                                                  max = 0.5,
-                                                  value = 0.20,
-                                                  step = 0.05)
-                               ),
-                               column(6,
-                                      sliderInput("statsMeanSize", 
-                                                  label = h4("Line Size"),
-                                                  min = 0,
-                                                  max = 2,
-                                                  value = 0.2,
-                                                  step = 0.1)
-                               )
+                                      uiOutput("statsLabelUI")))),
+                           ## Mean
+                           column(12,
+                                  h3("Mean")),
+                           column(12,
+                                  checkboxInput("statsMean", 
+                                                "Plot mean", 
+                                                FALSE)
+                           ),
+                           conditionalPanel(
+                             ## Maybe change to a dropdown menu with options.
+                             condition = "input.statsMean == true",
+                             column(6,
+                                    selectInput('statsMeanErrorBars',
+                                                label = h4("Add error bars to the mean"),
+                                                choices = list(
+                                                  'None' = 'none',
+                                                  '95% Confidence Interval' = 'mean_cl_boot',
+                                                  'Stardard Error' = 'mean_se',
+                                                  'Standard Deviation' = 'mean_sd'
+                                                ),
+                                                selected = 'none')
                              ),
-                             
-                             column(12,
-                                    hr()))
-                  ),
-                  column(12,
-                         h3("Save the plot")),
+                             column(6,
+                                    sliderInput("statsMeanWidth", 
+                                                label = h4("Mean Width"),
+                                                min = 0,
+                                                max = 1,
+                                                value = 0.5,
+                                                step = 0.05)
+                             ),
+                             column(6,
+                                    sliderInput("statsMeanNudge", 
+                                                label = h4("Center Offset"),
+                                                min = 0,
+                                                max = 0.5,
+                                                value = 0.20,
+                                                step = 0.05)
+                             ),
+                             column(6,
+                                    sliderInput("statsMeanSize", 
+                                                label = h4("Line Size"),
+                                                min = 0,
+                                                max = 2,
+                                                value = 0.2,
+                                                step = 0.1)
+                             )
+                           ),
+                           
+                           column(12,
+                                  hr()))
+      ),
+      column(12,
+             h3("Save the plot")),
       ## Code is prepared for a selectInput with the option formats, but users
       ## requested these 3 buttons as they find it easier. 
       ## Harcoding fixes problem with plotting outdated data, 
@@ -467,23 +491,23 @@ ui <- fluidPage (
                                    label = "pdf"))),
       ## Clearfix
       tags$div(class = 'clearfix')
-      ),
+    ),
     
-      ## The mainPanel output
-      mainPanel(
-        tabsetPanel(type = "tabs",
-                    tabPanel("Plot & Code",
-                             plotOutput("rainCloudPlot", 
-                                        height = "auto"),
-                             h3("Relevant Plot Code"),
-                             verbatimTextOutput("rainCloudCode")),
-                    tabPanel("About",
-                             htmlOutput("rainCloudAbout"))
-                    # tabPanel("Processed Data",
-                    #          dataTableOutput("rainCloudDataSummary"),
-                    #          dataTableOutput("rainCloudData"))
-        )
+    ## The mainPanel output
+    mainPanel(
+      tabsetPanel(type = "tabs",
+                  tabPanel("Plot",
+                           plotOutput("rainCloudPlot", 
+                                      height = "auto")),
+                  tabPanel("R Code",
+                           h3("Relevant Plot Code"),
+                           verbatimTextOutput("rainCloudCode")),
+                  tabPanel("About",
+                           htmlOutput("rainCloudAbout"))
+                  # tabPanel("Processed Data",
+                  #          dataTableOutput("rainCloudDataSummary"),
+                  #          dataTableOutput("rainCloudData"))
       )
     )
   )
-  
+)
