@@ -44,7 +44,7 @@ dataUpload <- function(input, output, session) {
     quoteCode <- ifelse(input$quote == '\'', '"{input$quote}"', '\'{input$quote}\'')
     sepCode <- ifelse(input$sep == '\t', '\\t', '{input$sep}')
     glue('## Load the data
-  inputData <- read.delim2("C:\\fakepath\\file.txt",
+  inputData <- read.delim2("{name()}",
   header = {input$header},
   sep = \'', sepCode, '\',
   quote = ', quoteCode, ',
