@@ -80,7 +80,7 @@ dataManipulation <- function(input, output, session, inputData, filterConditions
   for (i in 1:length(filterConditions)) {
     filterConditionsText <- glue(filterConditionsText, '"{filterConditions[i]}",')
   }
-  filterConditionsText <- substr(filterConditionsText,1,nchar(filterConditionsText)-2)
+  filterConditionsText <- substr(filterConditionsText,1,nchar(filterConditionsText)-1)
   filterConditionsText <- glue(filterConditionsText, ')')
 
     code <- reactive({

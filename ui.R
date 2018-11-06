@@ -1,6 +1,6 @@
 library('shiny')
 source("source/dataUploadUI.R", local = TRUE)
-source("source/downloadPlotUI.R", local = TRUE)
+#source("source/downloadPlotUI.R", local = TRUE)
 source("source/paletteColours.R", local = TRUE)
 
 ui <- fluidPage (
