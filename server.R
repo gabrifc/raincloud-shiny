@@ -22,7 +22,7 @@ server <- function(input, output, session) {
                               inputData,
                               input$filterColumns)})
 
-  # UI - Filter the data.
+  # UI - Data - Filter the data.
   output$DataFilterColumnsUI <- renderUI({
     req(inputData$conditions())
     selectInput('filterColumns',
@@ -66,7 +66,7 @@ server <- function(input, output, session) {
     )
   })
   
-  # Generate the Plot Code but do not evaluate yet.
+  # Generate the plot code based on input options but do not evaluate yet.
   plotCode <- reactive({createPlot(input)})
   
   # Evaluate the code based on the processed data.
@@ -75,17 +75,17 @@ server <- function(input, output, session) {
     eval(parse(text = glue(plotCode())))
   })
   
-  # Output the plot
+  # Render the plot.
   output$rainCloudPlot <- renderPlot({
-    # We don't output the plot without inputData.
+    # We don't render the plot without inputData.
     req(inputData$name())
     plotFigure()},
     height = function(x) input$height,
     width = function(x) input$width)
   
-  # Print the code
+  # Print the code.
   output$rainCloudCode <- renderText({
-    # We don't render the Code without inputData.
+    # We don't render the code without inputData.
     req(inputData$name())
     formatCode(input, inputData$code(), processedData()$code(), plotCode())
   })
@@ -98,15 +98,28 @@ server <- function(input, output, session) {
             input$downloadFormat, sep = ".")
     },
     content = function(file) {
-      ggsave(file,
-             plot = plotFigure(),
-             device = input$downloadFormat,
-             # Width and height are in inches. We increase the dpi to 300, so we
-             # have to divide by 72 (original default pixels per inch) 
-             width = input$width / 72,
-             height = input$height / 72,
-             units = "in",
-             dpi = 300)
+      if(input$downloadFormat == 'tiff') {
+        ggsave(file,
+               plot = plotFigure(),
+               device = input$downloadFormat,
+               # Width and height are in inches. We increase the dpi to 300, so we
+               # have to divide by 72 (original default pixels per inch) 
+               width = input$width / 72,
+               height = input$height / 72,
+               compression = "lzw",
+               units = "in",
+               dpi = 300)
+      } else {
+        ggsave(file,
+               plot = plotFigure(),
+               device = input$downloadFormat,
+               # Width and height are in inches. We increase the dpi to 300, so we
+               # have to divide by 72 (original default pixels per inch) 
+               width = input$width / 72,
+               height = input$height / 72,
+               units = "in",
+               dpi = 300)
+      }
     }
   )
   

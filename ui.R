@@ -481,12 +481,12 @@ ui <- fluidPage (
                          choices = list(
                            "Vectorial" = list(
                              "pdf" = "pdf",
-                             "svg" = "svg"
+                             "svg" = "svg",
+                             "eps" = "eps"
                            ),
                            "Non-vectorial" = list(
-                             "png" = "png",
-                             "tiff" = "tiff"
-                           )
+                             "tiff" = "tiff",
+                             "png" = "png")
                          ),
                          selected = "pdf")),
       column(6,
