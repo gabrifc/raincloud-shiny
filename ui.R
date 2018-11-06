@@ -18,7 +18,7 @@ ui <- fluidPage (
                   tabPanel("Data",
                            dataUploadUI("rainCloud", label = "File input"),
                            column(12,
-                                  uiOutput('DataFilterColumns'))),
+                                  uiOutput('DataFilterColumnsUI'))),
                   tabPanel("Plot Options", 
                            tabsetPanel(type = "pills",
                                        tabPanel("Titles and Scale",
@@ -506,7 +506,7 @@ ui <- fluidPage (
                            h3("Relevant Plot Code"),
                            verbatimTextOutput("rainCloudCode")),
                   tabPanel("About",
-                           htmlOutput("rainCloudAbout"))
+                           includeHTML("www/about.html"))
                   # tabPanel("Processed Data",
                   #          dataTableOutput("rainCloudDataSummary"),
                   #          dataTableOutput("rainCloudData"))
