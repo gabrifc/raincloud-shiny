@@ -4,6 +4,8 @@ source("source/downloadPlotUI.R", local = TRUE)
 source("source/paletteColours.R", local = TRUE)
 
 ui <- fluidPage (
+  # CSS, fixes palette picker (//github.com/gabrifc/raincloud-shiny/issues/12)
+  tags$style(".bootstrap-select .dropdown-menu li a span.text {width: 100%;}"),
   
   # Application title
   titlePanel("Raincloud Plots"),
@@ -118,7 +120,7 @@ ui <- fluidPage (
                                                          width = "100%",
                                                          choicesOpt = list(
                                                            content = sprintf(
-                                                             "<div style='width:100%%;padding:5px;border-radius:4px;background:%s;color:%s'>%s</div>",
+                                                             "<div style='width:100%%;padding:2px;border-radius:4px;background:%s;color:%s'>%s</div>",
                                                              unname(background_pals), 
                                                              colortext_pals, 
                                                              names(background_pals)
