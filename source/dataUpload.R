@@ -62,7 +62,7 @@ dataUpload <- function(input, output, session) {
 dataManipulation <- function(input, output, session, inputData, filterConditions) {
   req(filterConditions)
   # Cleaning here is good for the 'as.numeric' of the boxplots.
-  cleanedData <- inputData$inputData()[,filterConditions]
+  cleanedData <- select(inputData$inputData(),filterConditions)
   
   df <- reactive({
     gather(cleanedData,
@@ -85,7 +85,7 @@ dataManipulation <- function(input, output, session, inputData, filterConditions
 
     code <- reactive({
     glue('## Select the columns and reorder the data if needed
-inputData <- inputData[,{filterConditionsText}]
+inputData <- select(inputData,{filterConditionsText})
 
 ## Reformat the data for ggplot
 plotData <- gather(inputData,

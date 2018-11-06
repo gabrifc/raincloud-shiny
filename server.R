@@ -3,8 +3,6 @@
 # TODO: Modularize downloads.
 # TODO: Add About & Intro.
 # TODO: Add plot Templates.
-# TODO: Add notice if length of conditions is lower than 2.
-# TODO: Wait for update conditions before trying to replot.
 #
 
 library('glue')
@@ -12,7 +10,7 @@ library('stringr')
 
 source("source/createPlot.R", local = TRUE)
 source("source/formatCode.R", local = TRUE)
-source("source/downloadPlot.R", local = TRUE)
+#source("source/downloadPlot.R", local = TRUE)
 source("source/dataUpload.R", local = TRUE)
 
 server <- function(input, output, session) {
