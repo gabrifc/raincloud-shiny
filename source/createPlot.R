@@ -86,7 +86,7 @@ scale_shape_identity() + ')
   
   ## Background Horizontal Line
   if (input$horizontalLine) {
-    p <- paste0(p, 'geom_hline(yintercept = "{input$horizontalLinePosition}", 
+    p <- paste0(p, 'geom_hline(yintercept = {input$horizontalLinePosition}, 
              linetype = "{input$horizontalLineType}", 
              size = {input$horizontalLineSize}, 
              alpha = {input$horizontalLineAlpha}) + ')
