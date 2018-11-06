@@ -4,6 +4,7 @@
 # TODO: Add About & Intro.
 # TODO: Add plot Templates.
 # TODO: Add notice if length of conditions is lower than 2.
+# TODO: Wait for update conditions before trying to replot.
 #
 
 library('glue')
@@ -92,24 +93,22 @@ server <- function(input, output, session) {
   })
   
   # Process the data. This is a reactive!
-  
   processedData <- reactive({callModule(dataManipulation, "rainCloud", 
                               inputData,
                               input$filterColumns)})
   # Generate the Plot Code 
   plotCode <- reactive({createPlot(input)})
   
+  plotFigure <- reactive({
+    plotData <- processedData()$df()
+    eval(parse(text = glue(plotCode())))
+  })
+  
   ## Output the plot
   output$rainCloudPlot <- renderPlot(
     height = function(x) input$height,
     width = function(x) input$width,
-    {## We need to declate the 'plotData' variable in this context.
-      plotData = processedData()$df() 
-      
-      ## And evaluate the code to output the plot.
-      ## Using <<- we don't have to call it again in the downloads. 
-      plotEval <<- eval(parse(text = glue(plotCode())))
-      plotEval})
+    {plotFigure()})
   
   # Print the code
   output$rainCloudCode <- renderText({
@@ -117,79 +116,29 @@ server <- function(input, output, session) {
     req(inputData$name())
     formatCode(input, inputData$code(), processedData()$code(), plotCode())
   })
+  
+  output$downloadPlot <- downloadHandler(
+    filename = function() {
+      paste(paste('rainCloudPlot-',inputData$name(), sep = ""), 
+            input$downloadFormat, sep = ".")
+    },
+    content = function(file) {
+      ggsave(file,
+             plot = plotFigure(),
+             device = input$downloadFormat,
+             width = input$width / 72,
+             height = input$height / 72,
+             units = "in",
+             dpi = 300)
+    }
+  )
+  
+  # callModule(downloadPlot, id = "rainCloudDownload",
+  #            plot = plotFigure(),
+  #            fileName = inputData$name(),
+  #            width = input$width / 72,
+  #            height = input$height / 72)
 
-  ## last_plot() is not updated if we change the input data.
-  ## returnPlot()$plot is not updated if we change the input data. I assume that
-  ## is a problem with reactivity, modules and ids but I am not knowledgeable 
-  ## enough with that.
-  # output$rainCloudpng <- callModule(downloadPlot, id = "rainCloudpng",
-  #                                   plot = print(returnPlot()$plot),
-  #                                   fileType = "png",
-  #                                   width = input$width / 72,
-  #                                   height = input$height / 72)
-  # output$rainCloudtiff <- callModule(downloadPlot, id = "rainCloudtiff", 
-  #                                   plot = returnPlot()$plot,
-  #                                   fileType = 'tiff',
-  #                                   width = input$width / 72,
-  #                                   height = input$height / 72)
-  # output$rainCloudpdf <- callModule(downloadPlot, id = "rainCloudpdf",
-  #                                   plot = returnPlot()$plot,
-  #                                   fileType = "pdf",
-  #                                   width = input$width / 72,
-  #                                   height = input$height / 72)
-  
-  ## Temporal solution.
-  output$png <- downloadHandler(
-    filename = function() {
-      paste(inputData$name(), "png", sep = ".")
-    },
-    content = function(file) {
-      ggsave(
-        filename = file,
-        plot = plotEval,
-        device = "png",
-        width = input$width / 72,
-        height = input$height / 72,
-        units = "in",
-        dpi = 300
-      )
-    }
-  )
-  
-  output$pdf <- downloadHandler(
-    filename = function() {
-      paste(inputData$name(), "pdf", sep = ".")
-    },
-    content = function(file) {
-      ggsave(
-        filename = file,
-        plot = plotEval,
-        device = "pdf",
-        width = input$width / 72,
-        height = input$height / 72,
-        units = "in",
-        dpi = 300
-      )
-    }
-  )
-  
-  output$tiff <- downloadHandler(
-    filename = function() {
-      paste(inputData$name(), "tiff", sep = ".")
-    },
-    content = function(file) {
-      ggsave(
-        filename = file,
-        plot = plotEval,
-        device = "tiff",
-        width = input$width / 72,
-        height = input$height / 72,
-        units = "in",
-        dpi = 300
-      )
-    }
-  )
-  
   # Should probably move that but it's convenient while editing.
   output$rainCloudAbout <- renderUI ({
     HTML("<h2>Raincloud Plots</h2>

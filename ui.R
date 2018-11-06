@@ -5,7 +5,8 @@ source("source/paletteColours.R", local = TRUE)
 
 ui <- fluidPage (
   # CSS, fixes palette picker (//github.com/gabrifc/raincloud-shiny/issues/12)
-  tags$style(".bootstrap-select .dropdown-menu li a span.text {width: 100%;}"),
+  tags$style(".bootstrap-select .dropdown-menu li a span.text {width: 100%;}
+             #downloadPlot {margin-top: 25px}"), 
   
   # Application title
   titlePanel("Raincloud Plots"),
@@ -16,7 +17,8 @@ ui <- fluidPage (
       tabsetPanel(type = "pills",
                   tabPanel("Data",
                            dataUploadUI("rainCloud", label = "File input"),
-                           uiOutput('DataFilterColumns')),
+                           column(12,
+                                  uiOutput('DataFilterColumns'))),
                   tabPanel("Plot Options", 
                            tabsetPanel(type = "pills",
                                        tabPanel("Titles and Scale",
@@ -470,27 +472,26 @@ ui <- fluidPage (
       ),
       column(12,
              h3("Save the plot")),
-      ## Code is prepared for a selectInput with the option formats, but users
-      ## requested these 3 buttons as they find it easier. 
-      ## Harcoding fixes problem with plotting outdated data, 
-      ## but needs to be studied.
-      column(12,
-             p("Select the format in which you wish to save the generated plot."),
-             column(4,
-                    # downloadPlotUI(id = "rainCloudpng", 
-                    #                label = "png"),
-                    downloadButton("png", 
-                                   label = "png")),
-             column(4,
-                    # downloadPlotUI(id = "rainCloudtiff", 
-                    #                label = "tiff"),
-                    downloadButton("tiff", 
-                                   label = "tiff")),
-             column(4,
-                    # downloadPlotUI(id = "rainCloudpdf", 
-                    #                label = "pdf"),
-                    downloadButton("pdf", 
-                                   label = "pdf"))),
+      # downloadPlotUI(id = 'rainCloudDownload',
+      #                label = "Image format",
+      #                buttonLabel = "Download"),
+      column(6,
+             selectInput("downloadFormat",
+                         label = "Image format",
+                         choices = list(
+                           "Vectorial" = list(
+                             "pdf" = "pdf",
+                             "svg" = "svg"
+                           ),
+                           "Non-vectorial" = list(
+                             "png" = "png",
+                             "tiff" = "tiff"
+                           )
+                         ),
+                         selected = "pdf")),
+      column(6,
+             downloadButton("downloadPlot", 
+                            label = "Download")),
       ## Clearfix
       tags$div(class = 'clearfix')
     ),

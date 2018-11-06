@@ -1,16 +1,14 @@
 downloadPlot <- function(input, output, session, plot, 
-                         fileType, width, height) {
+                         fileName, width, height) {
   
-  output$generatePlot <- downloadHandler(
+  output$downloadPlot <- downloadHandler(
     filename = function() {
-      paste('rainCloudPlot', fileType, sep = ".")
+      paste(paste('rainCloudPlot-',fileName, sep = ""), input$downloadFormat, sep = ".")
     },
     content = function(file) {
       ggsave(file,
-             ## the ggghost has to be printed to be a plot, otherwise cannot be 
-             ## saved as it is not a ggplot object for ggsave.
              plot = plot,
-             device = fileType,
+             device = input$downloadFormat,
              width = width,
              height = height,
              units = "in",
@@ -18,21 +16,3 @@ downloadPlot <- function(input, output, session, plot,
     }
   )
 }
-
-
-# output$png <- downloadHandler(
-#   filename = function() {
-#     paste(input$excelFile$name, "png", sep = ".")
-#   },
-#   content = function(file) {
-#     ggsave(
-#       filename = file,
-#       plot = last_plot(),
-#       device = "png",
-#       width = input$width / 72,
-#       height = input$height / 72,
-#       units = "in",
-#       dpi = 300
-#     )
-#   }
-# )
