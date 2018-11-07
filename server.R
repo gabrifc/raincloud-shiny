@@ -1,5 +1,5 @@
 #
-# TODO: Download Zip.
+# TODO: DRY ggsave calls into function.
 # TODO: Add Intro to the functions and files.
 # TODO: Add plot Templates.
 #
@@ -83,11 +83,16 @@ server <- function(input, output, session) {
     height = function(x) input$height,
     width = function(x) input$width)
   
+  # ScriptCode
+  scriptCode <- reactive({
+    formatCode(input, inputData$code(), processedData()$code(), plotCode())
+  })
+  
   # Print the code.
   output$rainCloudCode <- renderText({
     # We don't render the code without inputData.
     req(inputData$name())
-    formatCode(input, inputData$code(), processedData()$code(), plotCode())
+    scriptCode()
   })
   
   # Download button
@@ -129,16 +134,67 @@ server <- function(input, output, session) {
   #            width = input$width / 72,
   #            height = input$height / 72)
   
-  # Download script, data, and plots.
-  # output$downloadScript <- downloadHandler(
-  #   filename = function() {"rainCloudPlot.zip"},
-  #   content = function() {
-  #     fs <- c(inputData$datapath())
-  #     tmpdir <- tempdir()
-  #     print(tempdir())
-  #     setwd(tempdir())
-  #     zip(zipfile=filename, files=fs)
-  #   },
-  #   contentType = "application/zip"
-  # )
+  # Download zip file with script, data, and plots.
+  output$downloadScript <- downloadHandler(
+    filename = function() {
+      paste0("RainCloudPlot-", inputData$name(), ".zip")
+    },
+    content = function(fname) {
+      fs <- c()
+      tmpdir <- tempdir()
+      # inputData
+
+      # Copy inputData to tmpDir
+      file.copy(from = c(inputData$datapath()),
+                to = tmpdir)
+
+      # Copy halfViolinPlots.R to tmpDir
+      file.copy(from = c("source/halfViolinPlots.R"), 
+                to = tmpdir)
+      
+      # Move to the tmpDir to work with the tmpFiles
+      setwd(tmpdir)
+      
+      # Change the name of the uploaded file so that the code still works.
+      tmpInputFile <- basename(inputData$datapath())
+      file.rename(from = tmpInputFile,
+                  to = inputData$name())
+    
+      # Code
+      write(scriptCode(), "rainCloudPlot.R")
+
+      fs <- c(fs, inputData$name(), "rainCloudPlot.R", "halfViolinPlots.R")
+      
+      # Create all images (except tiff that is compressed).
+      for (format in c('pdf','svg','eps','png')) {
+        file <- paste(paste0('rainCloudPlot-',inputData$name()),
+                      format, sep = ".")
+        ggsave(file,
+               plot = plotFigure(),
+               device = format,
+               width = input$width / 72,
+               height = input$height / 72,
+               units = "in",
+               dpi = 300)
+        fs <- c(fs, file)
+      }
+      
+      # Add compressed .tiff
+      tiffFile <- paste(paste0('rainCloudPlot-',inputData$name()),
+                        'tiff', sep = ".")
+      ggsave(tiffFile,
+             plot = plotFigure(),
+             device = 'tiff',
+             compression = "lzw",
+             width = input$width / 72,
+             height = input$height / 72,
+             units = "in",
+             dpi = 300)
+      fs <- c(fs, tiffFile)
+      
+      # And create the zip
+      zip(zipfile=fname, files=fs)
+    },
+    contentType = "application/zip"
+  )
 }

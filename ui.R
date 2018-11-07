@@ -18,7 +18,9 @@ ui <- fluidPage (
                   tabPanel("Data",
                            dataUploadUI("rainCloud", label = "File input"),
                            column(12,
-                                  uiOutput('DataFilterColumnsUI'))),
+                                  uiOutput('DataFilterColumnsUI')),
+                           column(12,
+                                  hr())),
                   tabPanel("Plot Options", 
                            tabsetPanel(type = "pills",
                                        tabPanel("Titles and Scale",
@@ -471,7 +473,7 @@ ui <- fluidPage (
                                   hr()))
       ),
       column(12,
-             h3("Save the plot")),
+             h3("Download the plot image")),
       # downloadPlotUI(id = 'rainCloudDownload',
       #                label = "Image format",
       #                buttonLabel = "Download"),
@@ -492,6 +494,12 @@ ui <- fluidPage (
       column(6,
              downloadButton("downloadPlot", 
                             label = "Download")),
+      column(12,
+             p("Or, alternatively, download a zip file with the script and data
+               used to generate the plot."),
+             downloadButton('downloadScript',
+                            label = 'Download Zip File')),
+
       ## Clearfix
       tags$div(class = 'clearfix')
     ),
@@ -503,8 +511,9 @@ ui <- fluidPage (
                            plotOutput("rainCloudPlot", 
                                       height = "auto")),
                   tabPanel("R Code",
-                           h3("Relevant Plot Code"),
-                           verbatimTextOutput("rainCloudCode")),
+                           column(8,
+                                  h3("Plot Code"),
+                                  verbatimTextOutput("rainCloudCode"))),
                   tabPanel("About",
                            includeHTML("www/about.html"))
                   # tabPanel("Processed Data",

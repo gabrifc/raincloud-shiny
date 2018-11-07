@@ -36,9 +36,6 @@ getLibrariesCode <- function(input) {
   if(input$plotDots && (input$dotColumnType == 'beeswarm')) {
     librariesUsed <- c(librariesUsed, 'ggbeeswarm')
   }
-  if(input$plotViolins && (input$violinType == 'geom_flat_violin')) {
-    librariesUsed <- c(librariesUsed, 'flatViolin')
-  }
   if(input$statistics) {
     librariesUsed <- c(librariesUsed, 'ggpubr')
   }
@@ -48,7 +45,12 @@ getLibrariesCode <- function(input) {
   
   librariesCode <- paste(paste0('library("',librariesUsed, '") \n'), 
                          collapse = "")
+  if(input$plotViolins && (input$violinType == 'geom_flat_violin')) {
+    librariesCode <- paste0(librariesCode, 'source("halfViolinPlots.R") \n')
+  }
+  
   librariesCode <- paste0('## Load the required libraries\n', librariesCode)
   
   return(librariesCode)
 }
+source(file = "source/halfViolinPlots.R")

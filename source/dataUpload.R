@@ -22,6 +22,9 @@ dataUpload <- function(input, output, session) {
     }
   })
   # Alt. req(input$excelFile)
+  datapath <- reactive({
+    userFile()$datapath
+  })
   
   inputData <- reactive({
     read.delim2(
@@ -55,7 +58,8 @@ dataUpload <- function(input, output, session) {
     inputData = inputData,
     conditions = conditions,
     name = name,
-    code = code
+    code = code,
+    datapath = datapath
   ))
 }
 

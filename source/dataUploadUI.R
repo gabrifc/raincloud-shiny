@@ -36,8 +36,6 @@ dataUploadUI <- function(id, label = "File input") {
                                     "Single Quote" = "'"),
                         selected = "")),
     column(12,
-           checkboxInput(ns("sampleData"), "Use sample data", FALSE)),
-    column(12,
-           hr())
+           checkboxInput(ns("sampleData"), "Use sample data", FALSE))
   )
 }
