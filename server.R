@@ -130,15 +130,15 @@ server <- function(input, output, session) {
   #            height = input$height / 72)
   
   # Download script, data, and plots.
-  output$downloadScript <- downloadHandler(
-    filename = function() {"rainCloudPlot.zip"},
-    content = function() {
-      fs <- c(inputData$datapath())
-      tmpdir <- tempdir()
-      print(tempdir())
-      setwd(tempdir())
-      zip(zipfile=filename, files=fs)
-    },
-    contentType = "application/zip"
-  )
+  # output$downloadScript <- downloadHandler(
+  #   filename = function() {"rainCloudPlot.zip"},
+  #   content = function() {
+  #     fs <- c(inputData$datapath())
+  #     tmpdir <- tempdir()
+  #     print(tempdir())
+  #     setwd(tempdir())
+  #     zip(zipfile=filename, files=fs)
+  #   },
+  #   contentType = "application/zip"
+  # )
 }
