@@ -136,7 +136,7 @@ server <- function(input, output, session) {
   #            height = input$height / 72)
   
   # Download zip file with script, data, and plots.
-  output$downloadScript <- downloadHandler(
+  output$downloadZip <- downloadHandler(
     filename = function() {
       paste0("RainCloudPlot-", inputData$name(), ".zip")
     },

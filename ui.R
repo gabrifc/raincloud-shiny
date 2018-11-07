@@ -6,7 +6,7 @@ source("source/paletteColours.R", local = TRUE)
 ui <- fluidPage (
   # CSS, fixes palette picker (//github.com/gabrifc/raincloud-shiny/issues/12)
   tags$style(".bootstrap-select .dropdown-menu li a span.text {width: 100%;}
-             #downloadPlot {margin-top: 25px}"), 
+             #downloadPlot, #downloadZip {margin-top: 25px}"), 
   
   # Application title
   titlePanel("Raincloud Plots"),
@@ -477,7 +477,10 @@ ui <- fluidPage (
       # downloadPlotUI(id = 'rainCloudDownload',
       #                label = "Image format",
       #                buttonLabel = "Download"),
-      column(6,
+      column(12,
+             p("Select the image format or download a zip file with all the 
+               images, the script and data used to generate the plot.")),
+      column(4,
              selectInput("downloadFormat",
                          label = "Image format",
                          choices = list(
@@ -491,15 +494,12 @@ ui <- fluidPage (
                              "png" = "png")
                          ),
                          selected = "pdf")),
-      column(6,
+      column(4,
              downloadButton("downloadPlot", 
-                            label = "Download")),
-      column(12,
-             p("Or, alternatively, download a zip file with the script and data
-               used to generate the plot."),
-             downloadButton('downloadScript',
-                            label = 'Download Zip File')),
-
+                            label = "Download Image")),
+      column(4,
+             downloadButton('downloadZip',
+                            label = 'Download Zip')),
       ## Clearfix
       tags$div(class = 'clearfix')
     ),
