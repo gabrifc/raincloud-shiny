@@ -53,4 +53,3 @@ getLibrariesCode <- function(input) {
   
   return(librariesCode)
 }
-source(file = "source/halfViolinPlots.R")
