@@ -47,7 +47,7 @@ server <- function(input, output, session) {
     numericInput('statsLabelY',
                  label = h4("Multiple Significance Label Y height"), 
                  min = 0, 
-                 value = round(max(processedData$df()$value)*1.05))
+                 value = round(max(processedData()$df()$value)*1.05))
   })
   
   # UI - Plot - default scale limits.
@@ -61,7 +61,7 @@ server <- function(input, output, session) {
       column(6,
              numericInput("maxScale", 
                           label = h4("Max Scale Limit"), 
-                          value = round(max(processedData$df()$value)*1.1))
+                          value = round(max(processedData()$df()$value)*1.1))
       )
     )
   })
@@ -128,5 +128,17 @@ server <- function(input, output, session) {
   #            fileName = inputData$name(),
   #            width = input$width / 72,
   #            height = input$height / 72)
-
+  
+  # Download script, data, and plots.
+  output$downloadScript <- downloadHandler(
+    filename = function() {"rainCloudPlot.zip"},
+    content = function() {
+      fs <- c(inputData$datapath())
+      tmpdir <- tempdir()
+      print(tempdir())
+      setwd(tempdir())
+      zip(zipfile=filename, files=fs)
+    },
+    contentType = "application/zip"
+  )
 }
