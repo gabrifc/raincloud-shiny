@@ -6,6 +6,7 @@
 
 library('glue')
 library('stringr')
+library('svglite')
 
 source("source/createPlot.R", local = TRUE)
 source("source/formatCode.R", local = TRUE)
