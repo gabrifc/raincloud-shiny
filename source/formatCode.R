@@ -31,7 +31,7 @@ getLibrariesCode <- function(input) {
   if(input$plotPalette %in% ggsciPalettes) {
     librariesUsed <- c(librariesUsed, 'ggsci')
   } else {
-    librariesUsed <- c(librariesUsed, 'RColorBewer')
+    librariesUsed <- c(librariesUsed, 'RColorBrewer')
   }
   if(input$plotDots && (input$dotColumnType == 'beeswarm')) {
     librariesUsed <- c(librariesUsed, 'ggbeeswarm')
