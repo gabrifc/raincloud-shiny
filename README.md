@@ -1,20 +1,23 @@
 # Raincloud-shiny
 
-Raincloud-shiny is a shiny app for creating and customizing RainCloudPlots. A demo is hosted [here](https://gabrifc.shinyapps.io/raincloudplots/). The idea behind Raincloud plots was introduced by [Micah Allen on his blog](https://micahallen.org/2018/03/15/introducing-raincloud-plots/). My coworkers and I found it really interesting to display our data but they did not have any R experience, so I made this shiny app to provide a smooth transition to R and ggplot.
-
+<p>Raincloud-shiny is a Shiny-powered web GUI interface to create RainCloudPlots. A demo is hosted [here](https://gabrifc.shinyapps.io/raincloudplots/).</p>
+	
 ![Raincloud plots shiny app](https://raw.githubusercontent.com/gabrifc/raincloud-shiny/master/rainCloudPlots.PNG)
+
+<p>The idea behind Raincloud plots was introduced by <a href='https://micahallen.org/2018/03/15/introducing-raincloud-plots/'>Micah Allen on his blog</a>. My coworkers and I found it really interesting to display our data, so I made this shiny app to provide a smooth transition to R and ggplot.</p>
+<p>More information about Raincloud plots can be found on the <a href='https://wellcomeopenresearch.org/articles/4-63/v1'>in the published article</a>.</p>
 
 ## Citing RainCloudPlots
 Please refer to the [original RainCloudPlots source](https://github.com/RainCloudPlots/RainCloudPlots#citing-raincloudplots) for citations and licenses.
-
-TL;DR: Until the final manuscript is published, cite the original preprint ([here](https://peerj.com/preprints/27137v1/)).
 
 ## Credits
 
 The code of RainCloud-Shiny makes use / is inspired by the following open source projects:
 <ul>
 	<li><a href="https://github.com/RainCloudPlots/RainCloudPlots">RainCloudPlots</a>: The original code provided by the manuscript authors.</li>
-	<li><a href="https://shiny.rstudio.com/">RShiny</a>: Shiny is an R package that makes it easy to build interactive web apps straight from R.</li>
+	<li><a href="https://shiny.rstudio.com/">RShiny</a>: The shinythemes package provides some Bootstrap themes for use with Shiny.</li>
+	<li><a href="https://rstudio.github.io/shinythemes/">ShinyThemes</a>: Shiny is an R package that makes it easy to build interactive web apps straight from R.</li>
+	<li><a href="https://github.com/andrewsali/shinycssloaders">shinycssloaders</a>:Add loader animations (spinners) to Shiny Outputs in an automated fashion.</li>
 	<li><a href="https://dreamrs.github.io/shinyWidgets/index.html">shinyWidgets</a>: An extension of the default widgets available in Shiny.</li>
 	<li><a href="https://www.tidyverse.org/">Tidyverse</a>: An opinionated collection of R packages designed for data science. This app makes use of the following packages to wrangle and display data:
 		<ul>
@@ -32,3 +35,4 @@ The code of RainCloud-Shiny makes use / is inspired by the following open source
 	<li><a href="https://github.com/eclarke/ggbeeswarm">ggbeeswarm</a>: Provides methods to create beeswarm-style plots using ggplot2.</li>
 	<li><a href="http://biostat.mc.vanderbilt.edu/wiki/Main/Hmisc">Hmisc</a>: Miscellaneous utilities from Frank Harrell. Here used to calculate the 95% Confidence Intervals.</li>
 </ul>
+
