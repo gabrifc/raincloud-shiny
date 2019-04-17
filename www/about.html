@@ -1,6 +1,19 @@
 <h3>About this app</h3>
-<p>Raincloud-shiny is a Shiny-powered web GUI interface to create RainCloudPlots. The idea behind Raincloud plots was introduced by <a href='https://micahallen.org/2018/03/15/introducing-raincloud-plots/'>Micah Allen on his blog</a>. My coworkers and I found it really interesting to display our data but they did not have any R experience, so I made this shiny app to provide a smooth transition to R and ggplot.</p>
-<p>More information regarding RainCloudPlots can be found <a href='https://peerj.com/preprints/27137v1/'>in the preprint</a>. Please cite it if you use it in any kind of publication.</p>
+<p>Raincloud-shiny is a Shiny-powered web GUI interface to create RainCloudPlots. The idea behind Raincloud plots was introduced by <a href='https://micahallen.org/2018/03/15/introducing-raincloud-plots/'>Micah Allen on his blog</a>. My coworkers and I found it really interesting to display our data, so I made this shiny app to provide a smooth transition to R and ggplot.</p>
+<p>More information about Raincloud plots can be found on the <a href='https://wellcomeopenresearch.org/articles/4-63/v1'>in the published article</a>. Please cite it if you use it in any kind of publication:</p>
+<cite>
+	Allen M, Poggiali D, Whitaker K et al. <br>Raincloud plots: a multi-platform tool for robust data visualization [version 1; peer review: 2 approved]. <br>Wellcome Open Res 2019, 4:63 (<a href="https://doi.org/10.12688/wellcomeopenres.15191.1"></a>
+	https://doi.org/10.12688/wellcomeopenres.15191.1)
+</cite>
+
+<h3>Other Online Plotting Applications</h3>
+<p>There are a few other online applications that can be used to plot  data in a coherent and statistically valid way, such as: 
+<ul>
+	<li><a href="http://shiny.chemgrid.org/boxplotr/">BoxPlotR</a>: a web-tool for generation of box plots.</li>
+	<li><a href="https://huygens.science.uva.nl/PlotsOfData/">PlotsOfData</a>: A web app for visualizing data together with their summaries.</li>
+	<li><a href="https://www.estimationstats.com/#/">Estimation Statistics</a>: Analyze your data with effect sizes.</li>
+</ul>
+</p>
 
 <h3>Open Source</h3>
 <p>The source code for this Shiny app can be found in <a href='https://github.com/gabrifc/raincloud-shiny'>Github</a>.</p>
@@ -10,7 +23,9 @@
 <p>The code of RainCloud-Shiny makes use / is inspired by the following open source projects:
 <ul>
 	<li><a href="https://github.com/RainCloudPlots/RainCloudPlots">RainCloudPlots</a>: The original code provided by the manuscript authors.</li>
-	<li><a href="https://shiny.rstudio.com/">RShiny</a>: Shiny is an R package that makes it easy to build interactive web apps straight from R.</li>
+	<li><a href="https://shiny.rstudio.com/">RShiny</a>: The shinythemes package provides some Bootstrap themes for use with Shiny.</li>
+	<li><a href="https://rstudio.github.io/shinythemes/">ShinyThemes</a>: Shiny is an R package that makes it easy to build interactive web apps straight from R.</li>
+	<li><a href="https://github.com/andrewsali/shinycssloaders">shinycssloaders</a>:Add loader animations (spinners) to Shiny Outputs in an automated fashion.</li>
 	<li><a href="https://dreamrs.github.io/shinyWidgets/index.html">shinyWidgets</a>: An extension of the default widgets available in Shiny.</li>
 	<li><a href="https://www.tidyverse.org/">Tidyverse</a>: An opinionated collection of R packages designed for data science. This app makes use of the following packages to wrangle and display data:
 		<ul>

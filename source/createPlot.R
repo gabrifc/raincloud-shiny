@@ -11,7 +11,8 @@ library("ggbeeswarm")
 ## Colour themes
 # library("ggsci")
 # library("RColorBrewer")
-## The half violin geom
+
+## The half violin geom from @drob
 source(file = "source/halfViolinPlots.R")
 
 createPlot <- function(input) {
@@ -28,10 +29,18 @@ scale_shape_identity() + ')
   if (input$plotLegend == FALSE) {
     p <- paste0(p, 'theme(legend.position = "none",
              plot.title = element_text(size = {input$titleFontSize}),
-             axis.title = element_text(size = {input$axisFontSize})) + ')
+             axis.title = element_text(size = {input$axisLabelFontSize}),
+             axis.text = element_text(size = {input$scaleFontSize}),
+             axis.text.x = element_text(angle = {input$xAxisAngle}, 
+                hjust = {input$xAxishjust},
+                vjust = {input$xAxisvjust})) + ')
   } else {
     p <- paste0(p, 'theme(plot.title = element_text(size = {input$titleFontSize}),
-             axis.title = element_text(size = {input$axisFontSize})) + ')
+             axis.title = element_text(size = {input$axisLabelFontSize}),
+             axis.text = element_text(size = {input$scaleFontSize}),
+             axis.text.x = element_text(angle = {input$xAxisAngle}, 
+                hjust = {input$xAxishjust},
+                vjust = {input$xAxisvjust})) + ')
   }
   
   if (input$plotMajorGrid == TRUE) {
@@ -173,10 +182,10 @@ scale_shape_identity() + ')
       }
       ## Double check to prevent 'statsMethods not found'.
       if(input$statsTtest || input$statsWilcoxon) {
-        p <- paste0(p, 'stat_compare_means(mapping=aes(label = ',
+        p <- paste0(p, 'stat_compare_means(aes(label = ',
                     ifelse(input$statsLabelFormat == "..p.signif..", 
                            '{input$statsLabelFormat}',
-                           'format.pval({input$statsLabelFormat}, digits = 5)'),'),
+                           'format.pval({input$statsLabelFormat}, digits = {input$statsLabelDigits})'),'),
              method = "',statsMethods,'", 
              comparisons = ',statsPairwiseTestsText,') + ')
       }
@@ -210,11 +219,14 @@ getSelectedCombinations <- function(selectedCombinations) {
   statsPairwiseTests <- strsplit(selectedCombinations, 'vs')
   ## Start the list string.
   statsPairwiseTestsText <- "list("
+
   for (i in 1:length(statsPairwiseTests)) {
     statsPairwiseTestsText <- paste0(statsPairwiseTestsText,
                                      glue('c("{statsPairwiseTests[[i]][1]}",\\
                                           "{statsPairwiseTests[[i]][2]}"), '))}
+  
   ## Remove trailing ", " and add the closing parenthesis of the list.
   statsPairwiseTestsText <- substr(statsPairwiseTestsText,1,nchar(statsPairwiseTestsText)-2)
   statsPairwiseTestsText <- paste0(statsPairwiseTestsText, ')')
+  return(statsPairwiseTestsText)
 }

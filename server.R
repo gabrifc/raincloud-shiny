@@ -1,7 +1,6 @@
 #
 # TODO: DRY ggsave calls into function.
 # TODO: Add Intro to the functions and files.
-# TODO: Add plot Templates.
 #
 
 library('glue')
@@ -27,7 +26,8 @@ server <- function(input, output, session) {
   output$DataFilterColumnsUI <- renderUI({
     req(inputData$conditions())
     selectInput('filterColumns',
-                label = h4("Select Columns to Plot"), 
+                label = HTML("<h5>Detected columns</h5>
+                             <p>Use this input to filter out or move columns.</p>"), 
                 choices = inputData$conditions(),
                 selected = inputData$conditions(),
                 multiple = TRUE)
@@ -38,7 +38,7 @@ server <- function(input, output, session) {
     combinationList <- combn(input$filterColumns, 2, FUN = paste, 
                              collapse = 'vs')
     selectInput("statsCombinations", 
-                label = h4("Conditions To Test"),
+                label = h5("Conditions To Test"),
                 choices = combinationList,
                 multiple = TRUE)
   })
@@ -46,7 +46,7 @@ server <- function(input, output, session) {
   # UI - Stats - default multiple comparison label height.
   output$statsLabelUI <- renderUI({
     numericInput('statsLabelY',
-                 label = h4("Multiple Significance Label Y height"), 
+                 label = h5("Multiple Significance Label Y height"), 
                  min = 0, 
                  value = round(max(processedData()$df()$value)*1.05))
   })
@@ -56,19 +56,155 @@ server <- function(input, output, session) {
     tagList(
       column(6,
              numericInput("minScale", 
-                          label = h4("Min Scale Limit"), 
+                          label = h5("Min Scale Limit"), 
                           value = 0)
       ),
       column(6,
              numericInput("maxScale", 
-                          label = h4("Max Scale Limit"), 
+                          label = h5("Max Scale Limit"), 
                           value = round(max(processedData()$df()$value)*1.1))
       )
     )
   })
   
+  # Templates: update the values:
+  observeEvent(input$template_raincloud, {
+    # General
+    updateCheckboxInput(session, "plotFlip", value = FALSE)
+    # Dots
+    updateCheckboxInput(session, "plotDots", value = TRUE)
+    updateSelectInput(session, "dotColumnType", selected = "jitterDots")
+    updateSliderInput(session, "dotsWidth", value = 0.15)
+    # Violins
+    updateCheckboxInput(session, "plotViolins", value = TRUE)
+    updateSelectInput(session, "violinType", selected = "geom_flat_violin")
+    updateCheckboxInput(session, "violinTrim", value = TRUE)
+    updateSliderInput(session, "violinNudge", value = 0.2)
+    updateSliderInput(session, "violinAlpha", value = 0.6)
+    # Boxplots
+    updateCheckboxInput(session, "boxPlots", value = TRUE)
+    updateCheckboxInput(session, "boxplotNotch", value = TRUE)
+    updateSliderInput(session, "boxplotNudge", value = 0.2)
+    updateSliderInput(session, "boxplotAlpha", value = 0.3)
+    # Mean
+    updateCheckboxInput(session, "statsMean", value = FALSE)
+  })
+  observeEvent(input$template_rainclouds_flipped, {
+    # General
+    updateCheckboxInput(session, "plotFlip", value = TRUE)
+    # Dots
+    updateCheckboxInput(session, "plotDots", value = TRUE)
+    updateSelectInput(session, "dotColumnType", selected = "jitterDots")
+    updateSliderInput(session, "dotsWidth", value = 0.15)
+    # Violins
+    updateCheckboxInput(session, "plotViolins", value = TRUE)
+    updateSelectInput(session, "violinType", selected = "geom_flat_violin")
+    updateCheckboxInput(session, "violinTrim", value = TRUE)
+    updateSliderInput(session, "violinNudge", value = 0.2)
+    updateSliderInput(session, "violinAlpha", value = 0.6)
+    # Boxplots
+    updateCheckboxInput(session, "boxPlots", value = TRUE)
+    updateCheckboxInput(session, "boxplotNotch", value = TRUE)
+    updateSliderInput(session, "boxplotNudge", value = 0.2)
+    updateSliderInput(session, "boxplotAlpha", value = 0.3)
+    # Mean
+    updateCheckboxInput(session, "statsMean", value = FALSE)
+  })
+  observeEvent(input$template_data_boxplots, {
+    # General
+    updateCheckboxInput(session, "plotFlip", value = FALSE)
+    # Dots
+    updateCheckboxInput(session, "plotDots", value = TRUE)
+    updateSelectInput(session, "dotColumnType", selected = "jitterDots")
+    updateSliderInput(session, "dotsWidth", value = 0.15)
+    # Violins
+    updateCheckboxInput(session, "plotViolins", value = FALSE)
+    # Boxplots
+    updateCheckboxInput(session, "boxPlots", value = TRUE)
+    updateCheckboxInput(session, "boxplotNotch", value = TRUE)
+    updateSliderInput(session, "boxplotNudge", value = 0.3)
+    updateSliderInput(session, "boxplotAlpha", value = 0.6)
+    # Mean
+    updateCheckboxInput(session, "statsMean", value = FALSE)
+  })
+  observeEvent(input$template_mean_se, {
+    # General
+    updateCheckboxInput(session, "plotFlip", value = FALSE)
+    # Dots
+    updateCheckboxInput(session, "plotDots", value = TRUE)
+    updateSelectInput(session, "dotColumnType", selected = "beeswarm")
+    updateSliderInput(session, "dotsWidth", value = 0.15)
+    # Violins
+    updateCheckboxInput(session, "plotViolins", value = FALSE)
+    # Boxplots
+    updateCheckboxInput(session, "boxPlots", value = FALSE)
+    # Mean
+    updateCheckboxInput(session, "statsMean", value = TRUE)
+    updateSelectInput(session, "statsMeanErrorBars", selected = "mean_se")
+    updateSliderInput(session, "statsMeanWidth", value = 0.5)
+    updateSliderInput(session, "statsMeanNudge", value = 0)
+    updateSliderInput(session, "statsMeanSize", value = 1)
+  })
+  observeEvent(input$template_data_violins, {
+    # General
+    updateCheckboxInput(session, "plotFlip", value = FALSE)
+    # Dots
+    updateCheckboxInput(session, "plotDots", value = TRUE)
+    updateSelectInput(session, "dotColumnType", selected = "beeswarm")
+    updateSliderInput(session, "dotsWidth", value = 0.15)
+    # Violins
+    updateCheckboxInput(session, "plotViolins", value = TRUE)
+    updateSelectInput(session, "violinType", selected = "geom_violin")
+    updateCheckboxInput(session, "violinTrim", value = TRUE)
+    updateSliderInput(session, "violinNudge", value = 0)
+    updateSliderInput(session, "violinAlpha", value = 0.3)
+    updateCheckboxInput(session, "violinQuantiles", value = TRUE)
+    # Boxplots
+    updateCheckboxInput(session, "boxPlots", value = FALSE)
+    # Mean
+    updateCheckboxInput(session, "statsMean", value = FALSE)
+  })
+  observeEvent(input$template_boxplots_violins, {
+    # General
+    updateCheckboxInput(session, "plotFlip", value = FALSE)
+    # Dots
+    updateCheckboxInput(session, "plotDots", value = FALSE)
+    # Violins
+    updateCheckboxInput(session, "plotViolins", value = TRUE)
+    updateSelectInput(session, "violinType", selected = "geom_violin")
+    updateCheckboxInput(session, "violinTrim", value = TRUE)
+    updateSliderInput(session, "violinNudge", value = 0)
+    updateSliderInput(session, "violinAlpha", value = 0.2)
+    updateCheckboxInput(session, "violinQuantiles", value = FALSE)
+    # Boxplots
+    updateCheckboxInput(session, "boxPlots", value = TRUE)
+    updateCheckboxInput(session, "boxplotNotch", value = TRUE)
+    updateSliderInput(session, "boxplotNudge", value = 0)
+    updateSliderInput(session, "boxplotAlpha", value = 0.6)
+    # Mean
+    updateCheckboxInput(session, "statsMean", value = FALSE)
+  })
+  
+  
   # Generate the plot code based on input options but do not evaluate yet.
   plotCode <- reactive({createPlot(input)})
+  
+  # labelsVector <- reactive({
+  #   if (input$statistics) {
+  #     if (!is.null(input$statsCombinations)) {
+  #       labelsVector <- vector(length = length(input$statsCombinations))
+  #       statsPairwiseTests <- strsplit(input$statsCombinations, 'vs')
+  #       for (i in 1:length(input$statsCombinations)) {
+  #         position1 <- statsPairwiseTests[[i]][1]
+  #         position2 <- statsPairwiseTests[[i]][2]   
+  #         axisPositions <- match(c(position1, position2), 
+  #                                input$filterColumns)
+  #         labelsVector[i] <- round(max(processedData()$df()$value)) * ((abs(axisPositions[1]-axisPositions[2])*0.05)+1)
+  #       }
+  #     }
+  #   }
+  # })
+  # 
   
   # Evaluate the code based on the processed data.
   plotFigure <- reactive({
@@ -94,6 +230,19 @@ server <- function(input, output, session) {
     # We don't render the code without inputData.
     req(inputData$name())
     scriptCode()
+  })
+  
+  # Print the data
+  output$rainCloudDataSummary <- renderPrint({
+    # We don't render the table without inputData.
+    req(inputData$name())
+    summary(processedData()$df())
+  })
+  
+  output$rainCloudData <- renderTable({
+    # We don't render the table without inputData.
+    req(inputData$name())
+    inputData$inputData()
   })
   
   # Download button
@@ -141,10 +290,8 @@ server <- function(input, output, session) {
       paste0("RainCloudPlot-", inputData$name(), ".zip")
     },
     content = function(fname) {
-      fs <- c()
+      fileList <- c()
       tmpdir <- tempdir()
-      # inputData
-
       # Copy inputData to tmpDir
       file.copy(from = c(inputData$datapath()),
                 to = tmpdir)
@@ -164,7 +311,7 @@ server <- function(input, output, session) {
       # Code
       write(scriptCode(), "rainCloudPlot.R")
 
-      fs <- c(fs, inputData$name(), "rainCloudPlot.R", "halfViolinPlots.R")
+      fileList <- c(fileList, inputData$name(), "rainCloudPlot.R", "halfViolinPlots.R")
       
       # Create all images (except tiff that is compressed).
       for (format in c('pdf','svg','eps','png')) {
@@ -177,7 +324,7 @@ server <- function(input, output, session) {
                height = input$height / 72,
                units = "in",
                dpi = 300)
-        fs <- c(fs, file)
+        fileList <- c(fileList, file)
       }
       
       # Add compressed .tiff
@@ -191,10 +338,10 @@ server <- function(input, output, session) {
              height = input$height / 72,
              units = "in",
              dpi = 300)
-      fs <- c(fs, tiffFile)
+      fileList <- c(fileList, tiffFile)
       
       # And create the zip
-      zip(zipfile=fname, files=fs)
+      zip(zipfile=fname, files=fileList)
     },
     contentType = "application/zip"
   )

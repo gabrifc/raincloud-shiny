@@ -4,11 +4,11 @@ dataUploadUI <- function(id, label = "File input") {
   
   tagList(
     column(12,
-           h3("File Upload"),
-           p("Upload a txt or csv file with the different 
+           h4("Data Upload"),
+           p("Upload a .txt or .csv file with the different 
                              conditions and values separated by columns."),
            fileInput(ns("excelFile"), 
-                     label = h4(label),
+                     label = h5(label),
                      multiple = FALSE,
                      accept = c("text/csv",
                                 "text/comma-separated-values,text/plain",
